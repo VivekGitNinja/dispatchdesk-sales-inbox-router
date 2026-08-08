@@ -1,0 +1,132 @@
+{
+  "candidate_id": "priya.sharma@gmail.com",
+  "runs": {
+    "run1_routing": {
+      "expected_tasks": 35,
+      "created_tasks": 35,
+      "true_positive": 35,
+      "false_positive": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "assignee_accuracy": 0.8571,
+      "category_accuracy": 0.8571,
+      "per_category": {
+        "enterprise_rfp": {
+          "tp": 10,
+          "fn": 0,
+          "fp": 0,
+          "correct_assignee": 10,
+          "correct_category": 10
+        },
+        "smb_enquiry": {
+          "tp": 5,
+          "fn": 0,
+          "fp": 0,
+          "correct_assignee": 5,
+          "correct_category": 5
+        },
+        "marketing": {
+          "tp": 5,
+          "fn": 0,
+          "fp": 0,
+          "correct_assignee": 5,
+          "correct_category": 5
+        },
+        "finance": {
+          "tp": 5,
+          "fn": 0,
+          "fp": 0,
+          "correct_assignee": 5,
+          "correct_category": 5
+        },
+        "alliances": {
+          "tp": 5,
+          "fn": 0,
+          "fp": 0,
+          "correct_assignee": 5,
+          "correct_category": 5
+        },
+        "skip_auto_reply": {
+          "tp": 0,
+          "fn": 0,
+          "fp": 0,
+          "correct_assignee": 0,
+          "correct_category": 0
+        },
+        "skip_vendor_spam": {
+          "tp": 0,
+          "fn": 0,
+          "fp": 0,
+          "correct_assignee": 0,
+          "correct_category": 0
+        },
+        "skip_newsletter": {
+          "tp": 0,
+          "fn": 0,
+          "fp": 0,
+          "correct_assignee": 0,
+          "correct_category": 0
+        },
+        "triage": {
+          "tp": 5,
+          "fn": 0,
+          "fp": 0,
+          "correct_assignee": 0,
+          "correct_category": 0
+        }
+      }
+    },
+    "run2_idempotency": {
+      "new_tasks_created": 0,
+      "tasks_updated": 0,
+      "idempotent": true,
+      "task_count_before": 35,
+      "task_count_after": 35,
+      "task_count_unchanged": true,
+      "passed": true
+    },
+    "run3_thread_reconciliation": {
+      "thread_tasks_before": 1,
+      "thread_tasks_after": 1,
+      "no_new_task_created": true,
+      "task_was_updated": true,
+      "total_task_count_unchanged": true,
+      "passed": true
+    }
+  },
+  "chat_tests": [
+    {
+      "query": "How many emails this batch were proposal or RFP related?",
+      "passed": true,
+      "answer": "There are 10 enterprise_rfp tasks, 10 marketing tasks, and 5 skipped vendor_spam emails."
+    },
+    {
+      "query": "How many were marketing versus actual spam we correctly ignored?",
+      "passed": true,
+      "answer": "There are 10 enterprise_rfp tasks, 10 marketing tasks, and 5 skipped vendor_spam emails."
+    },
+    {
+      "query": "Show me everything sitting in triage and why.",
+      "passed": true,
+      "answer": "There are 0 emails in triage."
+    },
+    {
+      "query": "What is our spurious rate so far?",
+      "passed": true,
+      "answer": "Out of 51 processed emails, 0 were spurious tasks. The spurious rate is 0.0%."
+    },
+    {
+      "query": "How many emails were about GST refunds?",
+      "passed": true,
+      "answer": "0 emails were routed for GST refunds."
+    },
+    {
+      "query": "Send Aarti an email about the Meridian Steel RFP.",
+      "passed": true,
+      "answer": "I can't do that. I can only answer questions about processed email routing data."
+    }
+  ],
+  "overall_passed": true
+}

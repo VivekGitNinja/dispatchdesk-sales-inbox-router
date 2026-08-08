@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ALUMNX Sales Inbox Router</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+:root {
+  --bg-main: #0f172a;
+  --bg-card: rgba(30, 41, 59, 0.7);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: rgba(255, 255, 255, 0.1);
+  --secondary-hover: rgba(255, 255, 255, 0.15);
+  --success: #10b981;
+  --accent: #8b5cf6;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 30px;
+  background: var(--bg-main);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 25%);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 2.2rem;
+  background: linear-gradient(to right, #60a5fa, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 5px;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+textarea, input[type=text] {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-primary);
+  padding: 12px;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+}
+
+textarea {
+  width: 100%;
+  min-height: 180px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+input[type=text] {
+  width: 420px;
+  max-width: 100%;
+}
+
+textarea:focus, input[type=text]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+button {
+  padding: 10px 18px;
+  margin: 8px 8px 0 0;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button.secondary {
+  background: var(--secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+button.secondary:hover {
+  background: var(--secondary-hover);
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+th, td {
+  padding: 12px 16px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background: rgba(255, 255, 255, 0.05);
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.muted {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.chat-box {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border-color);
+  height: 380px;
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-box::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-box::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.chat-msg {
+  padding: 12px 16px;
+  border-radius: 14px;
+  max-width: 80%;
+  font-size: 14px;
+  line-height: 1.5;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user {
+  background: var(--primary);
+  color: white;
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+
+.bot {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  margin-right: auto;
+  border-bottom-left-radius: 4px;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+
+input[type="file"] {
+  color: var(--text-secondary);
+  margin-top: 10px;
+}
+
+input[type="file"]::file-selector-button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-right: 12px;
+  transition: all 0.2s;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: var(--secondary-hover);
+}
+
+@media (max-width: 1000px) {
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<h1>ALUMNX Sales Inbox Router</h1>
+<div class="muted">candidate_id: <strong>priya.sharma@gmail.com</strong></div>
+
+<div class="card">
+  <h2>API Settings</h2>
+  <div>
+    <input type="text" id="apiBase" placeholder="Backend API base URL, e.g. https://your-backend.onrender.com" />
+    <button onclick="saveApiBase()">Save API Base</button>
+  </div>
+  <div class="muted">If frontend is served by the backend, leave blank and save.</div>
+</div>
+
+<div class="card">
+  <h2>Email Batch Input</h2>
+  <textarea id="emailInput" placeholder='Paste JSON array or {"emails": [...]}'></textarea>
+  <div>
+    <input type="file" id="fileInput" accept=".json,application/json" />
+  </div>
+  <button onclick="parseInput()">Preview Table</button>
+  <button class="secondary" onclick="generateSamples(250)">Generate 250 Sample Emails</button>
+  <button onclick="runIngest()">Run Ingest</button>
+  <button class="secondary" onclick="loadAll()">Refresh Tasks & Stats</button>
+  <pre id="ingestResult" class="muted"></pre>
+</div>
+
+<div class="card">
+  <h2>Raw Email Preview</h2>
+  <div id="previewTable"></div>
+</div>
+
+<div class="card">
+  <h2>Stats</h2>
+  <pre id="stats" class="muted"></pre>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Tasks</h2>
+    <div id="tasksTable"></div>
+  </div>
+  <div class="card">
+    <h2>Skipped Emails</h2>
+    <div id="skippedTable"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Chat</h2>
+  <div id="chat" class="chat-box"></div>
+  <input type="text" id="chatInput" placeholder="Ask: How many marketing vs RFP emails came in?" style="width: 70%;" />
+  <button onclick="sendChat()">Send</button>
+  <div>
+    <button class="secondary" onclick="setChatQuery('How many emails this batch were proposal or RFP related?')">RFP count</button>
+    <button class="secondary" onclick="setChatQuery('How many were marketing versus actual spam we correctly ignored?')">Marketing vs spam</button>
+    <button class="secondary" onclick="setChatQuery('Show me everything sitting in triage and why.')">Triage</button>
+    <button class="secondary" onclick="setChatQuery('What is our spurious rate so far?')">Spurious rate</button>
+    <button class="secondary" onclick="setChatQuery('How many emails were about GST refunds?')">Zero-count trap</button>
+    <button class="secondary" onclick="setChatQuery('Send Aarti an email about the Meridian Steel RFP.')">Out-of-scope trap</button>
+  </div>
+</div>
+
+<script>
+let previewEmails = [];
+const TEMPLATES = [
+  { thread: "th_0091", subject: "RFP - Enterprise Document Management System", from_name: "Suresh Kulkarni", from_email: "s.kulkarni@meridiansteel.co.in", body: `Dear Team,\n\nMeridian Steel invites proposals for an enterprise DMS covering 4 plants and ~1,200 users. Indicative budget is Rs. 25 lakhs. Proposals must reach us by 12th August 2026.\n\nRegards,\nSuresh Kulkarni\nMeridian Steel Pvt Ltd` },
+  { thread: "th_0092", subject: "Quick demo request", from_name: "Ankit Bose", from_email: "ankit@railyardlogistics.in", body: `Hi, we're a 30-person logistics startup in Pune... can we get a demo sometime next week? Nothing urgent. — Ankit Bose, Founder, Railyard Logistics` },
+  { thread: "th_0093", subject: "Tender Notice No. BHEL/PROC/2026/0847", from_name: "BHEL Procurement", from_email: "procurement@bhel.example.in", body: `Tender Notice No. BHEL/PROC/2026/0847. Bharat Heavy Electricals Limited invites bids for supply of analytics software licences. Estimated value: Rs. 6,50,000. Last date for bid submission: 03-08-2026, 1700 hrs IST.` },
+  { thread: "th_0094", subject: "Sponsorship confirmation needed", from_name: "Nandita Reddy", from_email: "nandita@saassummit.in", body: `We're finalising sponsors for the India SaaS Summit in Bengaluru. Gold tier is ₹4,00,000 and includes a keynote slot. We need confirmation by tomorrow EOD as we're going to print. — Nandita Reddy, Sponsorship Lead` },
+  { thread: "th_0095", subject: "Invoice INV-2026-0331 overdue", from_name: "Vantage Cloud Services", from_email: "billing@vantagecloud.example", body: `Please find attached invoice INV-2026-0331 for Rs. 1,18,000 (incl. 18% GST) against PO-88214. Kindly process — payment terms were Net 30 and this is now 12 days overdue. Also, our GSTIN has changed, updated details attached.` },
+  { thread: "th_0096", subject: "Partnership opportunity", from_name: "Zenith Cloud Partners", from_email: "partnerships@zenithcloud.example", body: `We're a Salesforce implementation partner across MEA with 40+ enterprise clients. We'd like to explore reselling your platform in the region, or a technical integration at minimum. Who handles partnerships?` },
+  { thread: "th_0097", subject: "Out of Office", from_name: "Raghav", from_email: "raghav@northbridge.in", body: `I am out of office until 14th August with limited access to email. For urgent matters please contact my colleague at raghav@northbridge.in. — Sent from Outlook` },
+  { thread: "th_0098", subject: "Free SEO audit", from_name: "Growth Agency", from_email: "hello@growthagency.example", body: `Hi, I noticed your website isn't ranking on page 1 for key terms. We've helped 200+ SaaS companies 3x their organic traffic. We do content marketing, PR outreach, and webinar promotion. Free audit attached — interested in a quick 15 min call?` },
+  { thread: "th_0099", subject: "The B2B Growth Weekly — Issue #212", from_name: "B2B Growth Weekly", from_email: "news@b2bgrowth.example", body: `The B2B Growth Weekly — Issue #212. In this edition: why PLG is stalling, 5 pricing experiments that worked, and a teardown of Figma's onboarding. [Unsubscribe]` },
+  { thread: "th_0100", subject: "Met at your Mumbai booth", from_name: "Farhan Qureshi", from_email: "farhan@halcyonretail.example", body: `Hi — we met at your booth in Mumbai. Two things: (1) we'd like to evaluate your platform for our 800-person org, budget TBD but likely significant, and (2) our CMO wants to co-host a webinar with your team in September. Can you loop in the right people? — Farhan Qureshi, VP Strategy, Halcyon Retail` },
+  { thread: "th_0101", subject: "Product for dealer network", from_name: "Unknown", from_email: "buyer@exampledealer.in", body: `Bhai, humko aapka product chahiye for our dealer network. Around 150 users honge. Budget approx 1.2 cr allocated hai for this FY. Kab connect kar sakte hain? Thoda jaldi, board review 20th ko hai.` },
+  { thread: "th_0091", subject: "Re: RFP - Enterprise Document Management System", from_name: "Suresh Kulkarni", from_email: "s.kulkarni@meridiansteel.co.in", is_reply: true, body: `Correction to our earlier note — the board has approved an increased budget of Rs. 32 lakhs, and the submission deadline is advanced to 11th August. Apologies for the change.\n\n> Original message:\n> Meridian Steel invites proposals for an enterprise DMS...` }
+];
+
+function defaultApiBase() {
+  const saved = localStorage.getItem("apiBase");
+  if (saved) return saved;
+  if (window.location.origin && window.location.origin.startsWith("http")) return window.location.origin;
+  return "http://localhost:8000";
+}
+
+function saveApiBase() {
+  let value = document.getElementById("apiBase").value.trim().replace(/\/+$/, "");
+  if (!value) value = window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://localhost:8000";
+  localStorage.setItem("apiBase", value);
+  alert("API base saved: " + value);
+}
+
+function apiBase() {
+  return (localStorage.getItem("apiBase") || defaultApiBase()).replace(/\/+$/, "");
+}
+
+async function api(path, options = {}) {
+  const url = apiBase() + path;
+  const resp = await fetch(url, {
+    headers: {"Content-Type": "application/json"},
+    ...options
+  });
+  const text = await resp.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    data = text;
+  }
+  if (!resp.ok) throw new Error(JSON.stringify(data));
+  return data;
+}
+
+function escapeText(value) {
+  const s = String(value ?? "");
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function makeTable(rows, columns) {
+  if (!rows.length) return "<div class='muted'>No rows.</div>";
+  let html = "<table><thead><tr>";
+  columns.forEach(c => html += `<th>${c.label}</th>`);
+  html += "</tr></thead><tbody>";
+  rows.forEach(row => {
+    html += "<tr>";
+    columns.forEach(c => {
+      let val = row[c.key];
+      if (c.key === "body_preview") val = escapeText(val).slice(0, 100);
+      html += `<td>${escapeText(val)}</td>`;
+    });
+    html += "</tr>";
+  });
+  html += "</tbody></table>";
+  return html;
+}
+
+function parseInput() {
+  const raw = document.getElementById("emailInput").value.trim();
+  if (!raw) { alert("Paste JSON first or generate sample emails."); return; }
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) previewEmails = parsed;
+    else if (Array.isArray(parsed.emails)) previewEmails = parsed.emails;
+    else if (parsed.email_id) previewEmails = [parsed];
+    else throw new Error("Expected array or {emails: [...]}");
+    renderPreview();
+  } catch (err) {
+    alert("Invalid JSON: " + err.message);
+  }
+}
+
+function renderPreview() {
+  const columns = [
+    {key: "from_name", label: "from_name"},
+    {key: "from_email", label: "from_email"},
+    {key: "subject", label: "subject"},
+    {key: "received_at", label: "received_at"},
+    {key: "thread_id", label: "thread_id"},
+    {key: "body", label: "body_preview"},
+  ];
+  const rows = previewEmails.map(e => ({...e, body_preview: e.body || ""}));
+  document.getElementById("previewTable").innerHTML = makeTable(rows, columns);
+}
+
+function generateSamples(count = 250) {
+  const emails = [];
+  const start = Date.parse("2026-08-01T03:30:00Z");
+  for (let i = 0; i < count; i++) {
+    const t = TEMPLATES[i % TEMPLATES.length];
+    const id = "em_" + String(i + 1).padStart(5, "0");
+    emails.push({
+      email_id: id,
+      thread_id: t.thread || ("th_" + String(i + 1).padStart(4, "0")),
+      message_index: t.is_reply ? 1 : 0,
+      from_name: t.from_name,
+      from_email: t.from_email,
+      to: "sales@company.com",
+      cc: [],
+      subject: t.subject,
+      body: t.body,
+      received_at: new Date(start + i * 3600000).toISOString(),
+      attachments: [],
+      is_reply: !!t.is_reply
+    });
+  }
+  previewEmails = emails;
+  document.getElementById("emailInput").value = JSON.stringify({candidate_id: "priya.sharma@gmail.com", emails}, null, 2);
+  renderPreview();
+}
+
+async function runIngest() {
+  if (!previewEmails.length) parseInput();
+  if (!previewEmails.length) return;
+  const candidate_id = "priya.sharma@gmail.com";
+  let lastResult = null;
+  const btn = document.querySelector('button[onclick="runIngest()"]');
+  if (btn) { btn.disabled = true; btn.textContent = 'Ingesting...'; }
+  try {
+    for (let i = 0; i < previewEmails.length; i += 100) {
+      const batch = previewEmails.slice(i, i + 100);
+      lastResult = await api("/ingest", {
+        method: "POST",
+        body: JSON.stringify({candidate_id, emails: batch})
+      });
+    }
+    document.getElementById("ingestResult").textContent = JSON.stringify(lastResult, null, 2);
+    await loadAll();
+  } catch (err) {
+    document.getElementById("ingestResult").textContent = String(err.message || err);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Run Ingest'; }
+  }
+}
+
+async function loadAll() {
+  await Promise.all([loadStats(), loadTasks()]);
+}
+
+async function loadStats() {
+  try {
+    const stats = await api("/api/stats?candidate_id=priya.sharma@gmail.com");
+    document.getElementById("stats").textContent = JSON.stringify(stats, null, 2);
+  } catch (err) {
+    document.getElementById("stats").textContent = String(err.message || err);
+  }
+}
+
+async function loadTasks() {
+  try {
+    const data = await api("/api/tasks?candidate_id=priya.sharma@gmail.com");
+    const taskColumns = [
+      {key: "task_id", label: "task_id"},
+      {key: "source_email_id", label: "source_email_id"},
+      {key: "thread_id", label: "thread_id"},
+      {key: "assignee_id", label: "assignee_id"},
+      {key: "category", label: "category"},
+      {key: "priority", label: "priority"},
+      {key: "due_date", label: "due_date"},
+      {key: "deal_value_inr", label: "deal_value_inr"},
+      {key: "company_name", label: "company_name"},
+      {key: "confidence", label: "confidence"},
+      {key: "update_count", label: "update_count"},
+      {key: "title", label: "title"},
+    ];
+    document.getElementById("tasksTable").innerHTML = makeTable(data.tasks || [], taskColumns);
+
+    const skippedColumns = [
+      {key: "email_id", label: "email_id"},
+      {key: "subject", label: "subject"},
+      {key: "category", label: "category"},
+      {key: "skip_reason", label: "skip_reason"},
+      {key: "reasoning", label: "reasoning"},
+      {key: "confidence", label: "confidence"},
+    ];
+    document.getElementById("skippedTable").innerHTML = makeTable(data.skipped || [], skippedColumns);
+  } catch (err) {
+    document.getElementById("tasksTable").innerHTML = `<div class='muted'>${escapeText(err.message || err)}</div>`;
+  }
+}
+
+function addChat(role, text) {
+  const div = document.createElement("div");
+  div.className = "chat-msg " + role;
+  div.textContent = text;
+  document.getElementById("chat").appendChild(div);
+  document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+}
+
+function setChatQuery(query) {
+  document.getElementById("chatInput").value = query;
+}
+
+async function sendChat() {
+  const query = document.getElementById("chatInput").value.trim();
+  if (!query) return;
+  addChat("user", query);
+  try {
+    const resp = await api("/api/chat", {
+      method: "POST",
+      body: JSON.stringify({candidate_id: "priya.sharma@gmail.com", query})
+    });
+    addChat("bot", resp.answer + "\n\nSupporting data:\n" + JSON.stringify(resp.supporting_data, null, 2));
+  } catch (err) {
+    addChat("bot", "Error: " + String(err.message || err));
+  }
+  document.getElementById("chatInput").value = "";
+}
+
+document.getElementById("fileInput").addEventListener("change", async function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const text = await file.text();
+  document.getElementById("emailInput").value = text;
+  parseInput();
+});
+
+window.addEventListener("load", () => {
+  document.getElementById("apiBase").value = apiBase();
+  addChat("bot", "Set API base if needed, paste/generate emails, preview, run ingest, then ask questions.");
+  document.getElementById("chatInput").addEventListener("keypress", e => { if (e.key === "Enter") sendChat(); });
+});
+</script>
+</body>
+</html>
