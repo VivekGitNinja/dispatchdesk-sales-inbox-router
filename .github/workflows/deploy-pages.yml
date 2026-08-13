@@ -1,0 +1,48 @@
+name: Deploy DispatchDesk Dashboard to GitHub Pages
+
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build Static Site Artifact
+        run: |
+          mkdir -p public
+          if [ -d "frontend" ]; then
+            cp -r frontend/* public/
+          else
+            echo "Error: frontend directory not found!" && exit 1
+          fi
+          # Fallback copy for SPA routing compatibility
+          cp public/index.html public/404.html
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
