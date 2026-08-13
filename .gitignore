@@ -1,4 +1,6 @@
 .env
+.DS_Store
+.freebuff/
 __pycache__/
 *.pyc
 *.db

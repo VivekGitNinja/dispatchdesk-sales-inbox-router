@@ -1,5 +1,5 @@
 """
-run_eval.py — Evaluates the ALUMNX Sales Inbox Router against 3 grading runs:
+run_eval.py — Evaluates the DispatchDesk Sales Inbox Router against 3 grading runs:
   Run 1: Ingest → route → verify categories/assignees
   Run 2: Re-ingest same batch → verify idempotency (0 new tasks, 0 new updates)
   Run 3: Ingest thread reply → verify thread reconciliation (update, not new task)
@@ -11,7 +11,7 @@ import sys
 import httpx
 
 BASE = os.getenv("API_BASE", "http://localhost:8000").rstrip("/")
-CANDIDATE = os.getenv("CANDIDATE_ID", "priya.sharma@gmail.com")
+CANDIDATE = os.getenv("CANDIDATE_ID", "demo@dispatchdesk.ai")
 
 def ingest(emails):
     resp = httpx.post(f"{BASE}/ingest", json={"candidate_id": CANDIDATE, "emails": emails}, timeout=600)
@@ -177,7 +177,7 @@ print("\n═══ CHAT TESTS ═══")
 chat_tests = [
     {"query": "How many emails this batch were proposal or RFP related?", "expect_key": "enterprise_rfp", "expect_nonzero": True},
     {"query": "How many were marketing versus actual spam we correctly ignored?", "expect_key": "marketing", "expect_nonzero": True},
-    {"query": "Show me everything sitting in triage and why.", "expect_key": "triage_count", "expect_nonzero": False},
+    {"query": "Show me everything sitting in triage and why.", "expect_key": "triage_count", "expect_nonzero": True},
     {"query": "What is our spurious rate so far?", "expect_key": "spurious_rate", "expect_nonzero": False},
     {"query": "How many emails were about GST refunds?", "expect_key": "gst_refund_count", "expect_zero": True},
     {"query": "Send Aarti an email about the Meridian Steel RFP.", "expect_key": "out_of_scope", "expect_refusal": True},
@@ -197,7 +197,8 @@ for ct in chat_tests:
     elif ct.get("expect_nonzero"):
         key = ct["expect_key"]
         val = supporting.get(key) if isinstance(supporting, dict) else None
-        passed = val is not None and (not isinstance(val, (int, float)) or True)  # key exists
+        # Real assertion: the supporting value must exist AND be a positive number.
+        passed = isinstance(val, (int, float)) and val > 0
     
     status = "PASS" if passed else "FAIL"
     print(f"  [{status}] {ct['query'][:60]}...")
@@ -207,15 +208,21 @@ results["chat_tests"] = chat_results
 
 # ═══════════════════ SUMMARY ═══════════════════
 print("\n═══ SUMMARY ═══")
+# Hard gates: F1 AND routing quality (category + assignee) must both be at or
+# above 0.95. A task created with the wrong category/assignee is a real error,
+# and F1 alone cannot see it (it only measures "was a task created").
+ACCURACY_THRESHOLD = 0.95
+routing_ok = run1["f1"] >= 0.95 and run1["category_accuracy"] >= ACCURACY_THRESHOLD and run1["assignee_accuracy"] >= ACCURACY_THRESHOLD
 all_passed = (
-    run1["f1"] > 0.7 and
+    routing_ok and
     run2["passed"] and
     run3["passed"] and
     all(c["passed"] for c in chat_results)
 )
 results["overall_passed"] = all_passed
-print(f"  Run 1 F1={run1['f1']:.4f}  Run 2 Idempotent={run2['passed']}  "
-      f"Run 3 Thread={run3['passed']}  Chat={sum(c['passed'] for c in chat_results)}/{len(chat_results)}")
+print(f"  Run 1 F1={run1['f1']:.4f}  category_acc={run1['category_accuracy']:.4f}  assignee_acc={run1['assignee_accuracy']:.4f}  (gate >= {ACCURACY_THRESHOLD})")
+print(f"  Run 2 Idempotent={run2['passed']}  Run 3 Thread={run3['passed']}  Chat={sum(c['passed'] for c in chat_results)}/{len(chat_results)}")
+print(f"  ROUTING GATE: {'PASS' if routing_ok else 'FAIL'}")
 print(f"  OVERALL: {'PASS' if all_passed else 'FAIL'}")
 
 with open("evals/results.json", "w", encoding="utf-8") as f:

@@ -1,4 +1,4 @@
-# TEST PLAN — ALUMNX Sales Inbox Router
+# TEST PLAN — DispatchDesk Sales Inbox Router
 
 ## Test Scope
 

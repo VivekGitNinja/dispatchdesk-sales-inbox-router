@@ -1,5 +1,5 @@
 {
-  "candidate_id": "priya.sharma@gmail.com",
+  "candidate_id": "final-audit@dispatchdesk.ai",
   "runs": {
     "run1_routing": {
       "expected_tasks": 35,
@@ -10,8 +10,8 @@
       "precision": 1.0,
       "recall": 1.0,
       "f1": 1.0,
-      "assignee_accuracy": 0.8571,
-      "category_accuracy": 0.8571,
+      "assignee_accuracy": 1.0,
+      "category_accuracy": 1.0,
       "per_category": {
         "enterprise_rfp": {
           "tp": 10,
@@ -73,8 +73,8 @@
           "tp": 5,
           "fn": 0,
           "fp": 0,
-          "correct_assignee": 0,
-          "correct_category": 0
+          "correct_assignee": 5,
+          "correct_category": 5
         }
       }
     },
@@ -100,17 +100,17 @@
     {
       "query": "How many emails this batch were proposal or RFP related?",
       "passed": true,
-      "answer": "There are 10 enterprise_rfp tasks, 10 marketing tasks, and 5 skipped vendor_spam emails."
+      "answer": "There are 10 enterprise_rfp tasks, 5 marketing tasks, and 5 skipped vendor_spam emails."
     },
     {
       "query": "How many were marketing versus actual spam we correctly ignored?",
       "passed": true,
-      "answer": "There are 10 enterprise_rfp tasks, 10 marketing tasks, and 5 skipped vendor_spam emails."
+      "answer": "There are 10 enterprise_rfp tasks, 5 marketing tasks, and 5 skipped vendor_spam emails."
     },
     {
       "query": "Show me everything sitting in triage and why.",
       "passed": true,
-      "answer": "There are 0 emails in triage."
+      "answer": "There are 5 emails in triage."
     },
     {
       "query": "What is our spurious rate so far?",

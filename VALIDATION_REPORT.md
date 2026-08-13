@@ -1,7 +1,7 @@
-# VALIDATION REPORT — ALUMNX Sales Inbox Router
+# VALIDATION REPORT — DispatchDesk Sales Inbox Router
 
 **Validation date:** 2026-08-09  
-**Candidate ID:** `priya.sharma@gmail.com`
+**Candidate ID:** any tenant identifier (default `demo@dispatchdesk.ai`) — no longer hardcoded
 
 ---
 
@@ -37,7 +37,7 @@
 | 26 | ₹10L threshold rule | ✅ enterprise_rfp ↔ smb_enquiry |
 | 27 | 72-hour deadline → high priority | ✅ within_72_hours check |
 | 28 | Overdue invoice → high priority | ✅ "overdue" keyword check |
-| 29 | README has candidate_id | ✅ priya.sharma@gmail.com |
+| 29 | README has candidate_id | ✅ Generic tenant default (`demo@dispatchdesk.ai`), overridable in UI / env / query param |
 | 30 | DECISIONS has 6 tradeoffs | ✅ Including known-failure item |
 | 31 | EVALS has per-category metrics | ✅ Full table with TP/FN/FP |
 | 32 | Eval script tests all 3 runs | ✅ Run 1 + Run 2 + Run 3 |
@@ -54,14 +54,14 @@ None.
 
 | # | Gap | Status | Action Required |
 |---|-----|--------|-----------------|
-| G20 | Deployed URLs in README say REPLACE | ⚠️ Manual | Deploy to Render + Netlify, then update README |
+| G20 | Deployed URLs in README say REPLACE | ⚠️ Manual | One-click **Deploy to Render** button + Docker quickstart added; deploy from the Render dashboard to fill in the live demo URL |
 | G24 | Eval metrics only tested in fallback mode | ⚠️ Manual | Re-run `run_eval.py` with GEMINI_API_KEY set for final metrics |
 
 ---
 
 ## Assumptions [ASSUMPTION]
 
-1. **[ASSUMPTION]** The grader will use `priya.sharma@gmail.com` as candidate_id consistently across all runs.
+1. **[ASSUMPTION]** The grader will use a consistent `candidate_id` across all runs (any value works — the default is `demo@dispatchdesk.ai`).
 2. **[ASSUMPTION]** The grader's Run 2 and Run 3 will use the same backend instance (database persisted).
 3. **[ASSUMPTION]** "Spurious rate" in the PRD refers to tasks that were created but should have been skipped (false positives from the skip categories).
 4. **[ASSUMPTION]** The ₹10,00,000 threshold means exactly 10 lakhs INR (1,000,000 in integer).

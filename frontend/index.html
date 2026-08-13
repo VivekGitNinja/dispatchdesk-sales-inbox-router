@@ -1,332 +1,947 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ALUMNX Sales Inbox Router</title>
+<title>DispatchDesk — Inbox Dispatch Register</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
 :root {
-  --bg-main: #0f172a;
-  --bg-card: rgba(30, 41, 59, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --secondary: rgba(255, 255, 255, 0.1);
-  --secondary-hover: rgba(255, 255, 255, 0.15);
-  --success: #10b981;
-  --accent: #8b5cf6;
+  --paper: #f1efe8;
+  --paper-2: #e8e5da;
+  --paper-3: #dfdccf;
+  --ink: #21262e;
+  --ink-2: #3c434e;
+  --muted: #6d7380;
+  --faint: #98998f;
+  --line: #d6d2c4;
+  --line-strong: #b7b2a0;
+  --accent: #0e6b5c;          /* registrar green */
+  --accent-ink: #0a4f44;
+  --accent-soft: #dce9e3;
+  --stamp-red: #b93a2b;
+  --stamp-amber: #a26a12;
+  --paper-shadow: 0 1px 0 rgba(33,38,46,0.06), 0 12px 30px -18px rgba(33,38,46,0.35);
+  --radius: 4px;
 }
+
+* { box-sizing: border-box; }
+
+html { background: var(--paper); }
 
 body {
-  font-family: 'Inter', sans-serif;
   margin: 0;
-  padding: 30px;
-  background: var(--bg-main);
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 25%);
-  color: var(--text-primary);
-  min-height: 100vh;
+  font-family: 'Source Sans 3', system-ui, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse 70% 40% at 50% -10%, rgba(14,107,92,0.06), transparent),
+    var(--paper);
+  background-attachment: fixed;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1 {
-  font-weight: 700;
-  font-size: 2.2rem;
-  background: linear-gradient(to right, #60a5fa, #c084fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 5px;
-  letter-spacing: -0.02em;
+::selection { background: var(--accent-soft); }
+
+/* ── Masthead ────────────────────────────────────────────── */
+.masthead {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 34px 28px 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
-h2 {
-  font-weight: 600;
-  font-size: 1.2rem;
-  margin-top: 0;
-  margin-bottom: 16px;
-  color: var(--text-primary);
+.wordmark {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: 1.9rem;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink);
+  margin: 0;
+}
+
+.wordmark .mark { color: var(--accent); }
+
+.eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 10px 0 0;
+}
+
+.mast-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
-.card {
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.reg-field {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.45);
+  padding: 7px 11px;
+  border-radius: var(--radius);
 }
 
-.card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-}
+.reg-field b { color: var(--ink); font-weight: 500; }
 
-textarea, input[type=text] {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  color: var(--text-primary);
-  padding: 12px;
-  font-family: 'Inter', sans-serif;
-  transition: all 0.2s ease;
-}
-
-textarea {
-  width: 100%;
-  min-height: 180px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  box-sizing: border-box;
-}
-
-input[type=text] {
-  width: 420px;
-  max-width: 100%;
-}
-
-textarea:focus, input[type=text]:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
-button {
-  padding: 10px 18px;
-  margin: 8px 8px 0 0;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  background: var(--primary);
-  color: white;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.conn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 7px 11px;
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.45);
 }
 
-button:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
+.conn .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
-button:active {
-  transform: translateY(1px);
+.conn .dot.error { background: var(--stamp-red); box-shadow: 0 0 0 3px #f0ddd8; }
+
+/* ── Register frame ──────────────────────────────────────── */
+main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 26px 28px 90px;
 }
 
-button.secondary {
-  background: var(--secondary);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
+.rule {
+  height: 2px;
+  background: var(--ink);
+  margin: 18px 0 0;
+  position: relative;
 }
 
-button.secondary:hover {
-  background: var(--secondary-hover);
+.rule::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background: var(--line);
 }
+
+/* ── Hero: the inbox figure ──────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 22px;
+  margin-top: 26px;
+}
+
+.figure {
+  background: rgba(255,255,255,0.4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 24px 18px;
+  box-shadow: var(--paper-shadow);
+}
+
+.figure h2 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.big-count {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+
+.big-count .num {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: 3.6rem;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.big-count .cap {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 14px;
+}
+
+.fig {
+  padding: 6px 12px 0 0;
+  border-right: 1px solid var(--line);
+}
+
+.fig:last-child { border-right: none; }
+
+.fig .v {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.fig .l {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-top: 2px;
+}
+
+.hero-note {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--faint);
+  margin-top: 16px;
+}
+
+/* ── The sorting rack (signature) ────────────────────────── */
+.rack {
+  margin-top: 22px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 26px, rgba(33,38,46,0.03) 26px 27px),
+    rgba(255,255,255,0.35);
+  box-shadow: var(--paper-shadow);
+  overflow: hidden;
+}
+
+.rack-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--line);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rack-head .tot {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.rack-body {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+}
+
+.slot {
+  padding: 14px 16px 16px;
+  border-right: 1px solid var(--line);
+  position: relative;
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.slot:last-child { border-right: none; }
+
+.slot::after {
+  content: "";
+  position: absolute;
+  left: 10%; right: 10%; bottom: 6px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--slot-color, var(--line-strong));
+  opacity: 0.55;
+}
+
+.slot .who {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.slot .qty {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: 1.7rem;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.slot .kind {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Two-column register ─────────────────────────────────── */
+.cols {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 22px;
+  margin-top: 26px;
+  align-items: start;
+}
+
+.ledger {
+  background: rgba(255,255,255,0.4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--paper-shadow);
+  overflow: hidden;
+}
+
+.ledger-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ledger-head h2 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0;
+}
+
+.ledger-head .hint {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--faint);
+}
+
+.table-wrap { overflow-x: auto; }
 
 table {
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
   width: 100%;
-  font-size: 14px;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
+  font-size: 0.84rem;
+  min-width: 600px;
 }
 
 th, td {
-  padding: 12px 16px;
-  vertical-align: top;
-  border-bottom: 1px solid var(--border-color);
-}
-
-th {
-  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 14px;
   text-align: left;
-  font-weight: 600;
-  color: var(--text-secondary);
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+thead th {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-size: 12px;
-  letter-spacing: 0.05em;
+  color: var(--faint);
+  background: rgba(232,229,218,0.5);
 }
 
-tr:last-child td {
-  border-bottom: none;
+tbody tr { transition: background 0.12s ease; }
+tbody tr:hover { background: rgba(14,107,92,0.045); }
+tr:last-child td { border-bottom: none; }
+
+td.title-cell {
+  font-weight: 600;
+  color: var(--ink);
+  min-width: 190px;
+  max-width: 260px;
+  white-space: normal;
+  line-height: 1.35;
 }
 
-tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+td.mono, .mono { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+td.num { font-variant-numeric: tabular-nums; }
+
+.empty {
+  padding: 30px 18px;
+  text-align: center;
+  color: var(--faint);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
 }
 
-.muted {
-  color: var(--text-secondary);
-  font-size: 14px;
+/* ── Rubber stamps ───────────────────────────────────────── */
+.stamp {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1.5px solid var(--stamp-color, var(--line-strong));
+  border-radius: 3px;
+  color: var(--stamp-color, var(--ink-2));
+  background: rgba(255,255,255,0.5);
+  white-space: nowrap;
 }
 
-.grid {
+.stamp.cat-enterprise_rfp { --stamp-color: #23507f; }
+.stamp.cat-smb_enquiry   { --stamp-color: #0e6b5c; }
+.stamp.cat-marketing     { --stamp-color: #7c3a6d; }
+.stamp.cat-alliances     { --stamp-color: #5a4a9e; }
+.stamp.cat-finance       { --stamp-color: #8a6d1a; }
+.stamp.cat-triage        { --stamp-color: #a26a12; }
+.stamp.cat-skip          { --stamp-color: #6d7380; }
+
+.stamp.pri-urgent { --stamp-color: #8e1f3c; }
+.stamp.pri-high   { --stamp-color: var(--stamp-red); }
+.stamp.pri-medium { --stamp-color: var(--stamp-amber); }
+.stamp.pri-low    { --stamp-color: var(--muted); }
+
+.assignee {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--ink-2);
+  font-size: 0.82rem;
+}
+
+.avatar {
+  width: 21px; height: 21px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+/* ── Forms ───────────────────────────────────────────────── */
+.form-sheet {
+  background: rgba(255,255,255,0.4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--paper-shadow);
+  overflow: hidden;
+  margin-top: 22px;
+}
+
+.form-sheet .body { padding: 16px 18px 18px; }
+
+textarea, input[type=text] {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.74rem;
+  color: var(--ink);
+  background: rgba(255,255,255,0.6);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  width: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+textarea { min-height: 150px; resize: vertical; line-height: 1.55; }
+
+textarea:focus, input[type=text]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+
+.btn {
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 8px 15px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.btn:hover { background: #0a0d12; border-color: #0a0d12; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn.ghost {
+  background: transparent;
+  color: var(--ink);
+}
+
+.btn.ghost:hover { background: rgba(33,38,46,0.06); border-color: var(--ink); }
+
+.btn.ghost2 {
+  background: transparent;
+  color: var(--ink-2);
+  border-color: var(--line-strong);
+}
+
+.btn.ghost2:hover { border-color: var(--ink); color: var(--ink); background: transparent; }
+
+input[type="file"] {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--faint);
+  width: 100%;
+  margin-top: 12px;
+}
+
+input[type="file"]::file-selector-button {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  margin-right: 12px;
+  transition: all 0.15s;
+}
+
+input[type="file"]::file-selector-button:hover { border-color: var(--ink); }
+
+/* ── Breakdown ledger ────────────────────────────────────── */
+.breakdown { padding: 4px 2px; }
+
+.breakdown .row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  grid-template-columns: 1fr 44px;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px dotted var(--line);
 }
 
+.breakdown .row:last-child { border-bottom: none; }
+
+.breakdown .name {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.breakdown .count {
+  text-align: right;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.breakdown .track {
+  grid-column: 1 / -1;
+  height: 4px;
+  background: var(--paper-2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: -3px;
+}
+
+.breakdown .fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--bar-color, var(--accent));
+  transition: width 0.5s ease;
+}
+
+/* ── Raw stats ───────────────────────────────────────────── */
+pre.raw {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  line-height: 1.55;
+  color: var(--muted);
+  background: rgba(255,255,255,0.45);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 13px;
+  max-height: 280px;
+  overflow: auto;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Chat: dispatch note ─────────────────────────────────── */
 .chat-box {
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid var(--border-color);
-  height: 380px;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid var(--line);
+  height: 320px;
   overflow-y: auto;
   padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 16px;
+  border-radius: var(--radius);
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.chat-box::-webkit-scrollbar {
-  width: 6px;
-}
-.chat-box::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+.chat-box::-webkit-scrollbar, .table-wrap::-webkit-scrollbar, pre.raw::-webkit-scrollbar { width: 8px; height: 8px; }
+.chat-box::-webkit-scrollbar-thumb, .table-wrap::-webkit-scrollbar-thumb, pre.raw::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 8px;
 }
 
 .chat-msg {
-  padding: 12px 16px;
-  border-radius: 14px;
-  max-width: 80%;
-  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  max-width: 82%;
+  font-size: 0.85rem;
   line-height: 1.5;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.22s ease;
+  word-break: break-word;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.user {
-  background: var(--primary);
-  color: white;
+.chat-msg.user {
+  background: var(--ink);
+  color: var(--paper);
   margin-left: auto;
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 1px;
 }
 
-.bot {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
+.chat-msg.bot {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  color: var(--ink);
   margin-right: auto;
-  border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 1px;
 }
 
-pre {
+.chat-msg.bot .supporting {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line-strong);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
   white-space: pre-wrap;
-  word-break: break-word;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
 }
 
-input[type="file"] {
-  color: var(--text-secondary);
-  margin-top: 10px;
+.chat-input-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
 }
 
-input[type="file"]::file-selector-button {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  background: var(--secondary);
-  color: var(--text-primary);
+.chat-input-row input { flex: 1; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+.chip {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink-2);
   cursor: pointer;
-  margin-right: 12px;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
 }
 
-input[type="file"]::file-selector-button:hover {
-  background: var(--secondary-hover);
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  background: var(--accent-soft);
 }
 
-@media (max-width: 1000px) {
-  .grid { grid-template-columns: 1fr; }
+/* ── Toasts ──────────────────────────────────────────────── */
+#toasts {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  padding: 11px 15px;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: var(--paper-shadow);
+  animation: fadeIn 0.22s ease;
+  max-width: 380px;
+}
+
+.toast.ok { border-left: 3px solid #3fae8f; }
+.toast.err { border-left: 3px solid var(--stamp-red); }
+.toast.info { border-left: 3px solid #7f9cd1; }
+
+/* ── Footer ──────────────────────────────────────────────── */
+footer {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 34px 28px 60px;
+  text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+
+.api-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.api-row input { width: 250px; padding: 6px 9px; font-size: 0.7rem; }
+.api-row .btn { padding: 6px 12px; font-size: 0.72rem; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 1020px) {
+  .hero, .cols { grid-template-columns: 1fr; }
+  .rack-body { grid-template-columns: repeat(3, 1fr); }
+  .slot { border-bottom: 1px solid var(--line); min-height: 78px; }
+}
+
+@media (max-width: 640px) {
+  .masthead { padding: 24px 16px 0; }
+  main { padding: 20px 16px 70px; }
+  .figures { grid-template-columns: repeat(2, 1fr); }
+  .fig { border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+  .rack-body { grid-template-columns: repeat(2, 1fr); }
+  .big-count .num { font-size: 2.8rem; }
+  .wordmark { font-size: 1.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 </style>
 </head>
 <body>
-<h1>ALUMNX Sales Inbox Router</h1>
-<div class="muted">candidate_id: <strong>priya.sharma@gmail.com</strong></div>
 
-<div class="card">
-  <h2>API Settings</h2>
+<header class="masthead">
   <div>
-    <input type="text" id="apiBase" placeholder="Backend API base URL, e.g. https://your-backend.onrender.com" />
-    <button onclick="saveApiBase()">Save API Base</button>
+    <h1 class="wordmark">DispatchDesk <span class="mark">INBOX</span></h1>
+    <p class="eyebrow">Dispatch Register — Sales Email Routing</p>
   </div>
-  <div class="muted">If frontend is served by the backend, leave blank and save.</div>
-</div>
-
-<div class="card">
-  <h2>Email Batch Input</h2>
-  <textarea id="emailInput" placeholder='Paste JSON array or {"emails": [...]}'></textarea>
-  <div>
-    <input type="file" id="fileInput" accept=".json,application/json" />
+  <div class="mast-right">
+    <span class="reg-field">candidate: <b id="candidateId">demo@dispatchdesk.ai</b></span>
+    <span class="conn"><span class="dot" id="connDot"></span><span id="connText">connecting</span></span>
   </div>
-  <button onclick="parseInput()">Preview Table</button>
-  <button class="secondary" onclick="generateSamples(250)">Generate 250 Sample Emails</button>
-  <button onclick="runIngest()">Run Ingest</button>
-  <button class="secondary" onclick="loadAll()">Refresh Tasks & Stats</button>
-  <pre id="ingestResult" class="muted"></pre>
-</div>
+</header>
 
-<div class="card">
-  <h2>Raw Email Preview</h2>
-  <div id="previewTable"></div>
-</div>
+<main>
+  <div class="rule"></div>
 
-<div class="card">
-  <h2>Stats</h2>
-  <pre id="stats" class="muted"></pre>
-</div>
+  <section class="hero">
+    <div class="figure">
+      <h2>Inbox, this period <span class="hero-note">/api/stats · live</span></h2>
+      <div class="big-count">
+        <span class="num" id="heroCount">–</span>
+        <span class="cap">emails processed</span>
+      </div>
+      <div class="figures" id="statCards">
+        <div class="fig"><div class="v">–</div><div class="l">tasks</div></div>
+        <div class="fig"><div class="v">–</div><div class="l">updated</div></div>
+        <div class="fig"><div class="v">–</div><div class="l">skipped</div></div>
+        <div class="fig"><div class="v">–</div><div class="l">spurious</div></div>
+      </div>
+    </div>
 
-<div class="grid">
-  <div class="card">
-    <h2>Tasks</h2>
-    <div id="tasksTable"></div>
+    <div class="figure">
+      <h2>Routing breakdown</h2>
+      <div class="breakdown" id="categoryBars"></div>
+    </div>
+  </section>
+
+  <section class="rack" aria-label="Routing rack">
+    <div class="rack-head"><span>Dispatch rack — live loads by owner</span><span class="tot" id="rackTotal"></span></div>
+    <div class="rack-body" id="rackSlots"></div>
+  </section>
+
+  <section class="cols">
+    <div class="ledger">
+      <div class="ledger-head"><h2>Routed tasks</h2><span class="hint">one entry per routed email</span></div>
+      <div class="table-wrap"><div id="tasksTable"><div class="empty">Loading register…</div></div></div>
+    </div>
+
+    <div>
+      <div class="ledger" style="margin-bottom:22px">
+        <div class="ledger-head"><h2>Skipped as noise</h2><span class="hint">no task created</span></div>
+        <div class="table-wrap"><div id="skippedTable"><div class="empty">Loading…</div></div></div>
+      </div>
+
+      <div class="ledger">
+        <div class="ledger-head"><h2>Raw stats</h2><span class="hint">debug</span></div>
+        <div style="padding:14px 16px"><pre class="raw" id="stats">Loading…</pre></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-sheet">
+    <div class="ledger-head">
+      <h2>Email batch input</h2>
+      <span class="hint">paste a JSON array, preview, then ingest</span>
+    </div>
+    <div class="body">
+      <textarea id="emailInput" placeholder='Paste JSON array or {"emails": [...]}'></textarea>
+      <input type="file" id="fileInput" accept=".json,application/json" />
+      <div class="btn-row">
+        <button class="btn" onclick="parseInput()">Preview table</button>
+        <button class="btn ghost2" onclick="generateSamples(250)">Generate 250 samples</button>
+        <button class="btn" id="ingestBtn" onclick="runIngest()">Run ingest</button>
+        <button class="btn ghost" onclick="loadAll()">Refresh register</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="ledger" style="margin-top:22px">
+    <div class="ledger-head">
+      <h2>Raw email preview</h2>
+      <span class="hint">parsed rows from the batch input</span>
+    </div>
+    <div class="table-wrap"><div id="previewTable"><div class="empty">No emails loaded yet — paste JSON or generate samples.</div></div></div>
+  </section>
+
+  <section class="form-sheet" style="margin-top:22px">
+    <div class="ledger-head">
+      <h2>Ask the register</h2>
+      <span class="hint">answers are computed from the data, not guessed</span>
+    </div>
+    <div class="body">
+      <div id="chat" class="chat-box"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Ask: How many marketing vs RFP emails came in?" />
+        <button class="btn" onclick="sendChat()">Ask</button>
+      </div>
+      <div class="chips" id="chatChips"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="api-row">
+    <label for="apiBase">API base</label>
+    <input type="text" id="apiBase" placeholder="Backend API base URL" />
+    <button class="btn ghost" onclick="saveApiBase()">Save</button>
   </div>
-  <div class="card">
-    <h2>Skipped Emails</h2>
-    <div id="skippedTable"></div>
+  <div class="api-row" style="margin-top:8px">
+    <label for="candidateInput">candidate_id</label>
+    <input type="text" id="candidateInput" placeholder="your workspace identifier, e.g. ops@acme.in" />
+    <button class="btn ghost" onclick="saveCandidate()">Save</button>
   </div>
-</div>
+  <div class="api-row" style="margin-top:8px">
+    <label for="apiToken">API token</label>
+    <input type="password" id="apiToken" placeholder="optional bearer token" />
+    <button class="btn ghost" onclick="saveApiToken()">Save</button>
+  </div>
+  <div>DispatchDesk Inbox Dispatch Register · routes 150–250 sales emails a day · Gemini extraction + deterministic rules</div>
+</footer>
 
-<div class="card">
-  <h2>Chat</h2>
-  <div id="chat" class="chat-box"></div>
-  <input type="text" id="chatInput" placeholder="Ask: How many marketing vs RFP emails came in?" style="width: 70%;" />
-  <button onclick="sendChat()">Send</button>
-  <div>
-    <button class="secondary" onclick="setChatQuery('How many emails this batch were proposal or RFP related?')">RFP count</button>
-    <button class="secondary" onclick="setChatQuery('How many were marketing versus actual spam we correctly ignored?')">Marketing vs spam</button>
-    <button class="secondary" onclick="setChatQuery('Show me everything sitting in triage and why.')">Triage</button>
-    <button class="secondary" onclick="setChatQuery('What is our spurious rate so far?')">Spurious rate</button>
-    <button class="secondary" onclick="setChatQuery('How many emails were about GST refunds?')">Zero-count trap</button>
-    <button class="secondary" onclick="setChatQuery('Send Aarti an email about the Meridian Steel RFP.')">Out-of-scope trap</button>
-  </div>
-</div>
+<div id="toasts"></div>
 
 <script>
 let previewEmails = [];
+
+/* Candidate is a tenant/workspace identifier, never hardcoded to a person.
+   Priority: ?candidate= URL param → saved value → generic default. */
+function defaultCandidate() {
+  const urlParam = new URLSearchParams(window.location.search).get("candidate");
+  return urlParam || localStorage.getItem("candidateId") || "demo@dispatchdesk.ai";
+}
+const CANDIDATE_ID = defaultCandidate();
+const CATEGORY_META = {
+  enterprise_rfp: { label: "Enterprise RFP", color: "#23507f" },
+  smb_enquiry:    { label: "SMB Enquiry",    color: "#0e6b5c" },
+  marketing:      { label: "Marketing",      color: "#7c3a6d" },
+  alliances:      { label: "Alliances",      color: "#5a4a9e" },
+  finance:        { label: "Finance",        color: "#8a6d1a" },
+  triage:         { label: "Triage",         color: "#a26a12" }
+};
+const ASSIGNEE_META = {
+  u_aarti:  { name: "Aarti Menon",  short: "Aarti",  color: "#23507f" },
+  u_rohit:  { name: "Rohit Sharma", short: "Rohit",  color: "#0e6b5c" },
+  u_meera:  { name: "Meera Iyer",   short: "Meera",  color: "#7c3a6d" },
+  u_karan:  { name: "Karan Doshi",  short: "Karan",  color: "#5a4a9e" },
+  u_divya:  { name: "Divya Rao",    short: "Divya",  color: "#8a6d1a" },
+  u_triage: { name: "Triage Queue", short: "Triage", color: "#a26a12" }
+};
+const QUICK_CHATS = [
+  { label: "RFP count", query: "How many emails this batch were proposal or RFP related?" },
+  { label: "Marketing vs spam", query: "How many were marketing versus actual spam we correctly ignored?" },
+  { label: "Triage", query: "Show me everything sitting in triage and why." },
+  { label: "Spurious rate", query: "What is our spurious rate so far?" },
+  { label: "Zero-count trap", query: "How many emails were about GST refunds?" },
+  { label: "Out-of-scope trap", query: "Send Aarti an email about the Meridian Steel RFP." }
+];
+
 const TEMPLATES = [
   { thread: "th_0091", subject: "RFP - Enterprise Document Management System", from_name: "Suresh Kulkarni", from_email: "s.kulkarni@meridiansteel.co.in", body: `Dear Team,\n\nMeridian Steel invites proposals for an enterprise DMS covering 4 plants and ~1,200 users. Indicative budget is Rs. 25 lakhs. Proposals must reach us by 12th August 2026.\n\nRegards,\nSuresh Kulkarni\nMeridian Steel Pvt Ltd` },
   { thread: "th_0092", subject: "Quick demo request", from_name: "Ankit Bose", from_email: "ankit@railyardlogistics.in", body: `Hi, we're a 30-person logistics startup in Pune... can we get a demo sometime next week? Nothing urgent. — Ankit Bose, Founder, Railyard Logistics` },
@@ -342,6 +957,66 @@ const TEMPLATES = [
   { thread: "th_0091", subject: "Re: RFP - Enterprise Document Management System", from_name: "Suresh Kulkarni", from_email: "s.kulkarni@meridiansteel.co.in", is_reply: true, body: `Correction to our earlier note — the board has approved an increased budget of Rs. 32 lakhs, and the submission deadline is advanced to 11th August. Apologies for the change.\n\n> Original message:\n> Meridian Steel invites proposals for an enterprise DMS...` }
 ];
 
+/* ── Utilities ───────────────────────────────────────────── */
+function escapeText(value) {
+  const s = String(value ?? "");
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function fmtINR(value) {
+  if (value === null || value === undefined || value === "") return "—";
+  const n = Number(value);
+  if (isNaN(n)) return escapeText(value);
+  if (n >= 10000000) return "₹" + (n / 10000000).toFixed(n % 10000000 ? 2 : 0) + " cr";
+  if (n >= 100000) return "₹" + (n / 100000).toFixed(n % 100000 ? 1 : 0) + " lakh";
+  return "₹" + n.toLocaleString("en-IN");
+}
+
+function fmtPct(value) {
+  if (value === null || value === undefined || value === "") return "—";
+  const n = Number(value);
+  if (isNaN(n)) return escapeText(value);
+  return (n * 100).toFixed(0) + "%";
+}
+
+function catStamp(category) {
+  const c = String(category || "");
+  const cls = c.startsWith("skip_") ? "cat-skip" : ("cat-" + c);
+  const meta = CATEGORY_META[c];
+  const label = meta ? meta.label.toUpperCase() : (c || "—").toUpperCase();
+  return `<span class="stamp ${cls}">${escapeText(label)}</span>`;
+}
+
+function priStamp(priority) {
+  const p = String(priority || "medium").toLowerCase();
+  const label = p === "urgent" ? "URGENT" : p === "high" ? "HIGH" : p === "low" ? "LOW" : "MED";
+  return `<span class="stamp pri-${p}">${label}</span>`;
+}
+
+function assigneeChip(id) {
+  const meta = ASSIGNEE_META[id] || { name: id, short: id };
+  const initials = meta.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+  return `<span class="assignee"><span class="avatar">${escapeText(initials)}</span>${escapeText(meta.name)}</span>`;
+}
+
+function toast(message, kind = "info", duration = 3200) {
+  const wrap = document.getElementById("toasts");
+  const el = document.createElement("div");
+  el.className = "toast " + kind;
+  el.textContent = message;
+  wrap.appendChild(el);
+  setTimeout(() => { el.style.opacity = "0"; el.style.transition = "opacity 0.3s"; setTimeout(() => el.remove(), 320); }, duration);
+}
+
+function setConn(state) {
+  const dot = document.getElementById("connDot");
+  const text = document.getElementById("connText");
+  if (state === "ok") { dot.className = "dot"; text.textContent = "online"; }
+  else if (state === "err") { dot.className = "dot error"; text.textContent = "offline"; }
+  else { dot.className = "dot error"; text.textContent = "connecting"; }
+}
+
+/* ── API ─────────────────────────────────────────────────── */
 function defaultApiBase() {
   const saved = localStorage.getItem("apiBase");
   if (saved) return saved;
@@ -353,7 +1028,25 @@ function saveApiBase() {
   let value = document.getElementById("apiBase").value.trim().replace(/\/+$/, "");
   if (!value) value = window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://localhost:8000";
   localStorage.setItem("apiBase", value);
-  alert("API base saved: " + value);
+  document.getElementById("apiBase").value = value;
+  toast("API base saved: " + value, "ok");
+  loadAll();
+}
+
+function saveApiToken() {
+  const token = document.getElementById("apiToken").value.trim();
+  localStorage.setItem("apiToken", token);
+  toast(token ? "API token saved" : "API token cleared", "ok");
+  loadAll();
+}
+
+function saveCandidate() {
+  const value = document.getElementById("candidateInput").value.trim();
+  if (!value) { toast("Enter a candidate_id first", "err"); return; }
+  localStorage.setItem("candidateId", value);
+  document.getElementById("candidateId").textContent = value;
+  toast("candidate_id saved: " + value, "ok");
+  loadAll();
 }
 
 function apiBase() {
@@ -362,47 +1055,46 @@ function apiBase() {
 
 async function api(path, options = {}) {
   const url = apiBase() + path;
+  const token = localStorage.getItem("apiToken") || "";
+  const headers = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = "Bearer " + token;
   const resp = await fetch(url, {
-    headers: {"Content-Type": "application/json"},
+    headers,
     ...options
   });
   const text = await resp.text();
   let data;
-  try {
-    data = JSON.parse(text);
-  } catch (e) {
-    data = text;
-  }
+  try { data = JSON.parse(text); } catch (e) { data = text; }
   if (!resp.ok) throw new Error(JSON.stringify(data));
   return data;
 }
 
-function escapeText(value) {
-  const s = String(value ?? "");
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
-
+/* ── Tables ──────────────────────────────────────────────── */
 function makeTable(rows, columns) {
-  if (!rows.length) return "<div class='muted'>No rows.</div>";
-  let html = "<table><thead><tr>";
+  if (!rows || !rows.length) return `<div class="empty">No entries.</div>`;
+  let html = `<table><thead><tr>`;
   columns.forEach(c => html += `<th>${c.label}</th>`);
-  html += "</tr></thead><tbody>";
+  html += `</tr></thead><tbody>`;
   rows.forEach(row => {
-    html += "<tr>";
+    html += `<tr>`;
     columns.forEach(c => {
       let val = row[c.key];
-      if (c.key === "body_preview") val = escapeText(val).slice(0, 100);
+      if (c.render) { html += `<td>${c.render(val, row)}</td>`; return; }
+      if (c.mono) { html += `<td class="mono">${escapeText(val)}</td>`; return; }
+      if (c.num) { html += `<td class="num">${escapeText(val)}</td>`; return; }
+      if (c.title) { html += `<td class="title-cell" title="${escapeText(val)}">${escapeText(val)}</td>`; return; }
       html += `<td>${escapeText(val)}</td>`;
     });
-    html += "</tr>";
+    html += `</tr>`;
   });
-  html += "</tbody></table>";
+  html += `</tbody></table>`;
   return html;
 }
 
+/* ── Preview / ingest ────────────────────────────────────── */
 function parseInput() {
   const raw = document.getElementById("emailInput").value.trim();
-  if (!raw) { alert("Paste JSON first or generate sample emails."); return; }
+  if (!raw) { toast("Paste JSON first or generate sample emails.", "err"); return; }
   try {
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) previewEmails = parsed;
@@ -410,21 +1102,22 @@ function parseInput() {
     else if (parsed.email_id) previewEmails = [parsed];
     else throw new Error("Expected array or {emails: [...]}");
     renderPreview();
+    toast("Previewing " + previewEmails.length + " emails", "ok");
   } catch (err) {
-    alert("Invalid JSON: " + err.message);
+    toast("Invalid JSON: " + err.message, "err");
   }
 }
 
 function renderPreview() {
   const columns = [
-    {key: "from_name", label: "from_name"},
-    {key: "from_email", label: "from_email"},
-    {key: "subject", label: "subject"},
-    {key: "received_at", label: "received_at"},
-    {key: "thread_id", label: "thread_id"},
-    {key: "body", label: "body_preview"},
+    { key: "from_name", label: "From" },
+    { key: "from_email", label: "From email", mono: true },
+    { key: "subject", label: "Subject", title: true },
+    { key: "thread_id", label: "Thread", mono: true },
+    { key: "received_at", label: "Received", mono: true },
+    { key: "body", label: "Body", title: true }
   ];
-  const rows = previewEmails.map(e => ({...e, body_preview: e.body || ""}));
+  const rows = previewEmails.map(e => ({ ...e, body: (e.body || "").slice(0, 120) }));
   document.getElementById("previewTable").innerHTML = makeTable(rows, columns);
 }
 
@@ -450,109 +1143,204 @@ function generateSamples(count = 250) {
     });
   }
   previewEmails = emails;
-  document.getElementById("emailInput").value = JSON.stringify({candidate_id: "priya.sharma@gmail.com", emails}, null, 2);
+  document.getElementById("emailInput").value = JSON.stringify({ candidate_id: CANDIDATE_ID, emails }, null, 2);
   renderPreview();
+  toast("Generated " + count + " sample emails — ready to ingest", "ok");
 }
 
 async function runIngest() {
   if (!previewEmails.length) parseInput();
   if (!previewEmails.length) return;
-  const candidate_id = "priya.sharma@gmail.com";
-  let lastResult = null;
-  const btn = document.querySelector('button[onclick="runIngest()"]');
-  if (btn) { btn.disabled = true; btn.textContent = 'Ingesting...'; }
+  const btn = document.getElementById("ingestBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "Ingesting…"; }
   try {
+    let lastResult = null;
     for (let i = 0; i < previewEmails.length; i += 100) {
       const batch = previewEmails.slice(i, i + 100);
       lastResult = await api("/ingest", {
         method: "POST",
-        body: JSON.stringify({candidate_id, emails: batch})
+        body: JSON.stringify({ candidate_id: CANDIDATE_ID, emails: batch })
       });
     }
-    document.getElementById("ingestResult").textContent = JSON.stringify(lastResult, null, 2);
+    document.getElementById("stats").textContent = JSON.stringify(lastResult, null, 2);
+    toast("Ingest done: " + lastResult.processed + " processed, " + lastResult.tasks_created + " created, " + lastResult.skipped + " skipped", "ok");
     await loadAll();
   } catch (err) {
-    document.getElementById("ingestResult").textContent = String(err.message || err);
+    document.getElementById("stats").textContent = String(err.message || err);
+    toast("Ingest failed: " + String(err.message || err), "err");
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Run Ingest'; }
+    if (btn) { btn.disabled = false; btn.textContent = "Run ingest"; }
   }
 }
 
-async function loadAll() {
-  await Promise.all([loadStats(), loadTasks()]);
+/* ── Stats / rack rendering ──────────────────────────────── */
+function renderStatCards(stats) {
+  const spuriousRate = stats.processed ? ((stats.spurious_flagged || 0) / stats.processed) : 0;
+  document.getElementById("heroCount").textContent = stats.processed ?? "–";
+  const figs = [
+    { v: stats.tasks_created ?? 0, l: "tasks" },
+    { v: stats.tasks_updated ?? 0, l: "updated" },
+    { v: stats.skipped ?? 0, l: "skipped" },
+    { v: (spuriousRate * 100).toFixed(1) + "%", l: "spurious" }
+  ];
+  document.getElementById("statCards").innerHTML = figs.map(f =>
+    `<div class="fig"><div class="v">${escapeText(f.v)}</div><div class="l">${f.l}</div></div>`
+  ).join("");
 }
 
+function renderCategoryBars(stats) {
+  const counts = stats.category_counts || {};
+  const total = Object.values(counts).reduce((a, b) => a + Number(b || 0), 0);
+  const order = ["enterprise_rfp", "smb_enquiry", "marketing", "alliances", "finance", "triage"];
+  if (!total) {
+    document.getElementById("categoryBars").innerHTML = `<div class="empty">No tasks yet — run an ingest.</div>`;
+    renderRack({});
+    return;
+  }
+  const rows = order
+    .filter(c => counts[c])
+    .map(c => {
+      const meta = CATEGORY_META[c] || { label: c, color: "#6d7380" };
+      const count = Number(counts[c] || 0);
+      const pct = Math.round((count / total) * 100);
+      return `<div class="row">
+        <span class="name">${escapeText(meta.label)}</span>
+        <span class="count">${count}</span>
+        <div class="track"><div class="fill" style="--bar-color:${meta.color};width:${pct}%"></div></div>
+      </div>`;
+    })
+    .join("");
+  document.getElementById("categoryBars").innerHTML = rows || `<div class="empty">No data.</div>`;
+}
+
+function renderRack(tasks) {
+  const counts = {};
+  (tasks || []).forEach(t => {
+    const a = t.assignee_id || "u_triage";
+    counts[a] = (counts[a] || 0) + 1;
+  });
+  const order = ["u_aarti", "u_rohit", "u_meera", "u_karan", "u_divya", "u_triage"];
+  const total = (tasks || []).length;
+  document.getElementById("rackTotal").textContent = total ? total + " tasks in rack" : "rack empty";
+  document.getElementById("rackSlots").innerHTML = order.map(id => {
+    const meta = ASSIGNEE_META[id] || { name: id, short: id, color: "#6d7380" };
+    const qty = counts[id] || 0;
+    return `<div class="slot" style="--slot-color:${meta.color}">
+      <div class="who">${escapeText(meta.short)}</div>
+      <div class="qty">${qty}</div>
+      <div class="kind">${escapeText(meta.name)}</div>
+    </div>`;
+  }).join("");
+}
+
+/* ── Load data ───────────────────────────────────────────── */
 async function loadStats() {
   try {
-    const stats = await api("/api/stats?candidate_id=priya.sharma@gmail.com");
+    const stats = await api("/api/stats?candidate_id=" + CANDIDATE_ID);
+    renderStatCards(stats);
+    renderCategoryBars(stats);
     document.getElementById("stats").textContent = JSON.stringify(stats, null, 2);
+    return true;
   } catch (err) {
     document.getElementById("stats").textContent = String(err.message || err);
+    return false;
   }
 }
 
 async function loadTasks() {
   try {
-    const data = await api("/api/tasks?candidate_id=priya.sharma@gmail.com");
+    const data = await api("/api/tasks?candidate_id=" + CANDIDATE_ID);
     const taskColumns = [
-      {key: "task_id", label: "task_id"},
-      {key: "source_email_id", label: "source_email_id"},
-      {key: "thread_id", label: "thread_id"},
-      {key: "assignee_id", label: "assignee_id"},
-      {key: "category", label: "category"},
-      {key: "priority", label: "priority"},
-      {key: "due_date", label: "due_date"},
-      {key: "deal_value_inr", label: "deal_value_inr"},
-      {key: "company_name", label: "company_name"},
-      {key: "confidence", label: "confidence"},
-      {key: "update_count", label: "update_count"},
-      {key: "title", label: "title"},
+      { key: "title", label: "Subject", title: true },
+      { key: "assignee_id", label: "Assigned to", render: v => assigneeChip(v) },
+      { key: "target_role", label: "Role", mono: true },
+      { key: "category", label: "Category", render: v => catStamp(v) },
+      { key: "priority", label: "Priority", render: v => priStamp(v) },
+      { key: "deal_value_inr", label: "Deal value", render: v => fmtINR(v) },
+      { key: "due_date", label: "Due", mono: true },
+      { key: "confidence", label: "Confidence", render: v => fmtPct(v) },
+      { key: "update_count", label: "Upd", num: true }
     ];
     document.getElementById("tasksTable").innerHTML = makeTable(data.tasks || [], taskColumns);
+    renderRack(data.tasks || []);
 
     const skippedColumns = [
-      {key: "email_id", label: "email_id"},
-      {key: "subject", label: "subject"},
-      {key: "category", label: "category"},
-      {key: "skip_reason", label: "skip_reason"},
-      {key: "reasoning", label: "reasoning"},
-      {key: "confidence", label: "confidence"},
+      { key: "email_id", label: "Email", mono: true },
+      { key: "subject", label: "Subject", title: true },
+      { key: "category", label: "Category", render: v => catStamp(v) },
+      { key: "skip_reason", label: "Reason", mono: true },
+      { key: "confidence", label: "Confidence", render: v => fmtPct(v) }
     ];
     document.getElementById("skippedTable").innerHTML = makeTable(data.skipped || [], skippedColumns);
+    return true;
   } catch (err) {
-    document.getElementById("tasksTable").innerHTML = `<div class='muted'>${escapeText(err.message || err)}</div>`;
+    document.getElementById("tasksTable").innerHTML = `<div class="empty">${escapeText(err.message || err)}</div>`;
+    document.getElementById("skippedTable").innerHTML = `<div class="empty">${escapeText(err.message || err)}</div>`;
+    return false;
   }
 }
 
-function addChat(role, text) {
+async function loadAll() {
+  const [s, t] = await Promise.all([loadStats(), loadTasks()]);
+  setConn(s && t ? "ok" : "err");
+  return s && t;
+}
+
+/* ── Chat ────────────────────────────────────────────────── */
+function addChat(role, text, supporting) {
   const div = document.createElement("div");
   div.className = "chat-msg " + role;
-  div.textContent = text;
+  const body = document.createElement("div");
+  body.textContent = text;
+  div.appendChild(body);
+  if (role === "bot" && supporting !== undefined) {
+    const sup = document.createElement("div");
+    sup.className = "supporting";
+    sup.textContent = "supporting data: " + JSON.stringify(supporting, null, 2);
+    div.appendChild(sup);
+  }
   document.getElementById("chat").appendChild(div);
   document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
 }
 
 function setChatQuery(query) {
   document.getElementById("chatInput").value = query;
+  document.getElementById("chatInput").focus();
+}
+
+function quickChat(query) {
+  document.getElementById("chatInput").value = query;
+  sendChat();
 }
 
 async function sendChat() {
   const query = document.getElementById("chatInput").value.trim();
   if (!query) return;
   addChat("user", query);
+  document.getElementById("chatInput").value = "";
   try {
     const resp = await api("/api/chat", {
       method: "POST",
-      body: JSON.stringify({candidate_id: "priya.sharma@gmail.com", query})
+      body: JSON.stringify({ candidate_id: CANDIDATE_ID, query })
     });
-    addChat("bot", resp.answer + "\n\nSupporting data:\n" + JSON.stringify(resp.supporting_data, null, 2));
+    addChat("bot", resp.answer, resp.supporting_data);
   } catch (err) {
     addChat("bot", "Error: " + String(err.message || err));
+    toast("Chat request failed", "err");
   }
-  document.getElementById("chatInput").value = "";
 }
 
-document.getElementById("fileInput").addEventListener("change", async function(event) {
+/* ── Init ────────────────────────────────────────────────── */
+function renderChips() {
+  document.getElementById("chatChips").innerHTML = QUICK_CHATS.map((qc, i) =>
+    `<button class="chip" data-idx="${i}">${escapeText(qc.label)}</button>`
+  ).join("");
+  document.querySelectorAll("#chatChips .chip").forEach(btn => {
+    btn.addEventListener("click", () => quickChat(QUICK_CHATS[Number(btn.dataset.idx)].query));
+  });
+}
+
+document.getElementById("fileInput").addEventListener("change", async function (event) {
   const file = event.target.files[0];
   if (!file) return;
   const text = await file.text();
@@ -561,9 +1349,14 @@ document.getElementById("fileInput").addEventListener("change", async function(e
 });
 
 window.addEventListener("load", () => {
+  document.getElementById("candidateId").textContent = CANDIDATE_ID;
   document.getElementById("apiBase").value = apiBase();
-  addChat("bot", "Set API base if needed, paste/generate emails, preview, run ingest, then ask questions.");
+  document.getElementById("candidateInput").value = CANDIDATE_ID;
+  document.getElementById("apiToken").value = localStorage.getItem("apiToken") || "";
+  renderChips();
+  addChat("bot", "Register open. Ask about routed emails — RFP counts, marketing vs spam, triage, spurious rate — or use a quick chip below.");
   document.getElementById("chatInput").addEventListener("keypress", e => { if (e.key === "Enter") sendChat(); });
+  loadAll().then(ok => { if (!ok) setConn("err"); });
 });
 </script>
 </body>

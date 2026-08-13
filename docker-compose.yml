@@ -1,0 +1,18 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Optional: set GEMINI_API_KEY in your shell to enable LLM extraction.
+      # Without it, the deterministic fallback router handles every email.
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-1.5-flash}
+      - CANDIDATE_ID=${CANDIDATE_ID:-demo@dispatchdesk.ai}
+      - DATABASE_URL=sqlite:////data/inbox_router.db
+    volumes:
+      - inbox_data:/data
+    restart: unless-stopped
+
+volumes:
+  inbox_data:

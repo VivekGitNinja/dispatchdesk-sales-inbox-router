@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Unit tests
+        run: python -m pytest tests/ -v
+
+      - name: Start server (fresh DB)
+        run: |
+          export DATABASE_URL="sqlite:////tmp/ci_eval.db"
+          export GEMINI_API_KEY=""
+          nohup uvicorn app:app --app-dir backend --host 127.0.0.1 --port 8000 > /tmp/uvicorn.log 2>&1 &
+          for i in $(seq 1 20); do
+            curl -sf http://127.0.0.1:8000/health && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8000/health
+
+      - name: Eval suite (3 runs + chat, gated on accuracy)
+        run: python scripts/run_eval.py
+
+      - name: Verify eval gate
+        run: |
+          python - <<'EOF'
+          import json
+          r = json.load(open("evals/results.json"))
+          assert r["overall_passed"], "Eval gate FAILED — see evals/results.json"
+          assert r["runs"]["run1_routing"]["category_accuracy"] >= 0.95, "category accuracy below gate"
+          assert r["runs"]["run1_routing"]["assignee_accuracy"] >= 0.95, "assignee accuracy below gate"
+          print("EVAL GATE PASSED — f1=%.3f cat=%.3f assignee=%.3f" % (
+              r["runs"]["run1_routing"]["f1"],
+              r["runs"]["run1_routing"]["category_accuracy"],
+              r["runs"]["run1_routing"]["assignee_accuracy"]))
+          EOF

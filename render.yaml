@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: alumnx-sales-inbox-router
+    name: dispatchdesk-sales-inbox-router
     env: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt
@@ -11,7 +11,7 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: CANDIDATE_ID
-        value: priya.sharma@gmail.com
+        value: demo@dispatchdesk.ai
       - key: GEMINI_MODEL
         value: gemini-1.5-flash
       - key: PGSSLMODE

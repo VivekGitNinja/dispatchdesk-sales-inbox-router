@@ -1,4 +1,4 @@
-# GAP AUDIT — ALUMNX Sales Inbox Router
+# GAP AUDIT — DispatchDesk Sales Inbox Router
 
 Audit date: 2026-08-09 | Auditor: Automated PRD Completeness Analysis
 
@@ -33,7 +33,7 @@ Audit date: 2026-08-09 | Auditor: Automated PRD Completeness Analysis
 | G16 | Frontend/UI | XSS vulnerability — `escapeText()` doesn't escape HTML entities | **High** | Fix `escapeText()` to escape `<`, `>`, `&`, `"` | 🔧 Fixing |
 | G17 | Frontend/Chat | Chat input doesn't support Enter key to send | **Medium** | Add keypress handler | 🔧 Fixing |
 | G18 | Frontend/Chat | Chat input not cleared after sending | **Medium** | Clear input after send | 🔧 Fixing |
-| G19 | Documentation | README missing `candidate_id` byte-identical instruction (says "priya.sharma@gmail.com" but user needs to replace it) | **High** | Add clear instruction about replacing candidate_id | 🔧 Fixing |
+| G19 | Documentation | README previously hardcoded a `candidate_id` (priya.sharma@gmail.com) that made the project look like one person's assignment | **High** | Made candidate_id a tenant/workspace parameter — configurable in UI, env var, and query param | ✅ Fixed |
 | G20 | Documentation | README has only 2 deployed URLs — both say REPLACE | **Critical** | Need to be filled before submission (cannot auto-fix — depends on deployment) | ⚠️ Manual |
 | G21 | DECISIONS.md | Only 5 tradeoffs — spec requires "How you keep the chat interface from hallucinating numbers" as explicit item | **High** | Already covered in item 4 but needs more detail on the SQL→Gemini pipeline | 🔧 Fixing |
 | G22 | DECISIONS.md | Missing "One thing your system gets wrong that you knowingly shipped" | **Critical** | Add 6th tradeoff about known failure | 🔧 Fixing |
