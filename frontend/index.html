@@ -1070,7 +1070,9 @@ function isStaticHost() {
 function defaultApiBase() {
   const saved = localStorage.getItem("apiBase");
   if (saved) return saved;
-  if (isStaticHost()) return ""; // no backend on a static Pages host — demo mode
+  // Static hosts (GitHub Pages) default to the deployed backend; if it is
+  // unreachable the dashboard gracefully falls back to the embedded demo data.
+  if (isStaticHost()) return "https://dispatchdesk-sales-inbox-router.onrender.com";
   if (window.location.origin && window.location.origin.startsWith("http")) return window.location.origin;
   return "http://localhost:8000";
 }
