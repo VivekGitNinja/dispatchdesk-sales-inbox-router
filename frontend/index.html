@@ -1064,7 +1064,7 @@ function demoDataAvailable() {
 /* ── API ─────────────────────────────────────────────────── */
 function isStaticHost() {
   const o = window.location.origin || "";
-  return /\.github\.io$/.test(o) || o.startsWith("file:") || o === "null";
+  return /\.github\.io$/.test(o) || /\.vercel\.app$/.test(o) || o.startsWith("file:") || o === "null";
 }
 
 function defaultApiBase() {

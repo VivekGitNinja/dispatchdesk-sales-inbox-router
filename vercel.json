@@ -1,0 +1,5 @@
+{
+  "buildCommand": "echo 'static site — no build required'",
+  "outputDirectory": "frontend",
+  "cleanUrls": true
+}
