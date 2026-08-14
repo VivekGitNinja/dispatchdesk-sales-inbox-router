@@ -120,6 +120,22 @@ body {
 }
 
 .conn .dot.error { background: var(--stamp-red); box-shadow: 0 0 0 3px #f0ddd8; }
+.conn .dot.warn { background: var(--stamp-amber); box-shadow: 0 0 0 3px #f2e3bd; }
+
+.demo-banner {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 10px 14px;
+  border: 1px solid #e3c988;
+  background: #fbf3dd;
+  color: #7a5b12;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius);
+}
 
 /* ── Register frame ──────────────────────────────────────── */
 main {
@@ -799,10 +815,11 @@ footer {
 
 <main>
   <div class="rule"></div>
+  <div class="demo-banner" id="demoBanner">Static demo — showing a seeded demo inbox (<b id="demoCount">–</b> emails processed). Connect a live backend by setting the <b>API base</b> in the footer.</div>
 
   <section class="hero">
     <div class="figure">
-      <h2>Inbox, this period <span class="hero-note">/api/stats · live</span></h2>
+      <h2>Inbox, this period <span class="hero-note" id="heroNote">/api/stats · live</span></h2>
       <div class="big-count">
         <span class="num" id="heroCount">–</span>
         <span class="cap">emails processed</span>
@@ -909,6 +926,12 @@ footer {
 
 <script>
 let previewEmails = [];
+let DATA_MODE = "live";
+
+/* Embedded demo dataset (50 seeded emails → 35 tasks, 15 skipped).
+   Used only when no live backend is reachable — answers are computed from
+   this data, mirroring backend/chat_rag.py. Override with the footer API base. */
+const DEMO_DATA = {"stats":{"candidate_id":"demo@dispatchdesk.ai","processed":50,"tasks_created":35,"tasks_updated":0,"skipped":15,"spurious_flagged":0,"category_counts":{"alliances":5,"enterprise_rfp":10,"finance":5,"marketing":5,"smb_enquiry":5,"triage":5},"skipped_counts":{"auto_reply":5,"newsletter":5,"vendor_spam":5},"by_batch":{"accd685b":50}},"tasks":[{"task_id":"tsk_c018f8","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_050","thread_id":"th_eval_050","title":"Two asks","description":"Multi-intent or ambiguous email requiring human review","assignee_id":"u_triage","target_role":"SUPPORT_TEAM","category":"triage","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":"Halcyonretail","confidence":0.3,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.595940","updated_at":"2026-08-13T18:23:16.595940"},{"task_id":"tsk_40278b","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_046","thread_id":"th_eval_046","title":"Reseller partnership","description":"Alliance/partnership item detected","assignee_id":"u_karan","target_role":"SALES_TEAM","category":"alliances","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":"Zenithcloud","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.592121","updated_at":"2026-08-13T18:23:16.592122"},{"task_id":"tsk_2b6ef1","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_045","thread_id":"th_eval_045","title":"Invoice overdue","description":"Finance/invoice item detected","assignee_id":"u_divya","target_role":"FINANCE_TEAM","category":"finance","priority":"high","due_date":null,"deal_value_inr":null,"company_name":"Vantagecloud","confidence":0.75,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.590933","updated_at":"2026-08-13T18:23:16.590934"},{"task_id":"tsk_84c37a","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_044","thread_id":"th_eval_044","title":"Sponsorship","description":"Marketing/event item detected","assignee_id":"u_meera","target_role":"SALES_TEAM","category":"marketing","priority":"high","due_date":"2026-08-05","deal_value_inr":400000,"company_name":"Saassummit","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.589827","updated_at":"2026-08-13T18:23:16.589827"},{"task_id":"tsk_708ad1","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_043","thread_id":"th_eval_043","title":"PSU tender","description":"RFP/Tender detected via keyword matching","assignee_id":"u_aarti","target_role":"FOUNDER_OPS","category":"enterprise_rfp","priority":"urgent","due_date":"2026-08-03","deal_value_inr":650000,"company_name":"Bhel","confidence":0.75,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.588694","updated_at":"2026-08-13T18:23:16.588694"},{"task_id":"tsk_7b10b0","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_042","thread_id":"th_eval_042","title":"Demo request","description":"SMB enquiry detected","assignee_id":"u_rohit","target_role":"SALES_TEAM","category":"smb_enquiry","priority":"low","due_date":null,"deal_value_inr":null,"company_name":"Railyardlogistics","confidence":0.65,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.587567","updated_at":"2026-08-13T18:23:16.587568"},{"task_id":"tsk_51e004","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_041","thread_id":"th_eval_041","title":"RFP - Enterprise DMS","description":"Enterprise RFP detected","assignee_id":"u_aarti","target_role":"FOUNDER_OPS","category":"enterprise_rfp","priority":"medium","due_date":null,"deal_value_inr":2500000,"company_name":"Meridiansteel","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.586428","updated_at":"2026-08-13T18:23:16.586428"},{"task_id":"tsk_8d0bb3","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_040","thread_id":"th_eval_040","title":"Two asks","description":"Multi-intent or ambiguous email requiring human review","assignee_id":"u_triage","target_role":"SUPPORT_TEAM","category":"triage","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":"Halcyonretail","confidence":0.3,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.585388","updated_at":"2026-08-13T18:23:16.585389"},{"task_id":"tsk_f3e0b7","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_036","thread_id":"th_eval_036","title":"Reseller partnership","description":"Alliance/partnership item detected","assignee_id":"u_karan","target_role":"SALES_TEAM","category":"alliances","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":"Zenithcloud","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.581829","updated_at":"2026-08-13T18:23:16.581830"},{"task_id":"tsk_51448f","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_035","thread_id":"th_eval_035","title":"Invoice overdue","description":"Finance/invoice item detected","assignee_id":"u_divya","target_role":"FINANCE_TEAM","category":"finance","priority":"high","due_date":null,"deal_value_inr":null,"company_name":"Vantagecloud","confidence":0.75,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.580713","updated_at":"2026-08-13T18:23:16.580714"},{"task_id":"tsk_7e8c9b","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_034","thread_id":"th_eval_034","title":"Sponsorship","description":"Marketing/event item detected","assignee_id":"u_meera","target_role":"SALES_TEAM","category":"marketing","priority":"high","due_date":"2026-08-05","deal_value_inr":400000,"company_name":"Saassummit","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.579581","updated_at":"2026-08-13T18:23:16.579582"},{"task_id":"tsk_f4a998","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_033","thread_id":"th_eval_033","title":"PSU tender","description":"RFP/Tender detected via keyword matching","assignee_id":"u_aarti","target_role":"FOUNDER_OPS","category":"enterprise_rfp","priority":"urgent","due_date":"2026-08-03","deal_value_inr":650000,"company_name":"Bhel","confidence":0.75,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.578514","updated_at":"2026-08-13T18:23:16.578515"},{"task_id":"tsk_69d16c","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_032","thread_id":"th_eval_032","title":"Demo request","description":"SMB enquiry detected","assignee_id":"u_rohit","target_role":"SALES_TEAM","category":"smb_enquiry","priority":"low","due_date":null,"deal_value_inr":null,"company_name":"Railyardlogistics","confidence":0.65,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.577419","updated_at":"2026-08-13T18:23:16.577420"},{"task_id":"tsk_8527bd","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_031","thread_id":"th_eval_031","title":"RFP - Enterprise DMS","description":"Enterprise RFP detected","assignee_id":"u_aarti","target_role":"FOUNDER_OPS","category":"enterprise_rfp","priority":"medium","due_date":null,"deal_value_inr":2500000,"company_name":"Meridiansteel","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.576335","updated_at":"2026-08-13T18:23:16.576336"},{"task_id":"tsk_1a94d9","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_030","thread_id":"th_eval_030","title":"Two asks","description":"Multi-intent or ambiguous email requiring human review","assignee_id":"u_triage","target_role":"SUPPORT_TEAM","category":"triage","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":"Halcyonretail","confidence":0.3,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.575198","updated_at":"2026-08-13T18:23:16.575199"},{"task_id":"tsk_9449a7","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_026","thread_id":"th_eval_026","title":"Reseller partnership","description":"Alliance/partnership item detected","assignee_id":"u_karan","target_role":"SALES_TEAM","category":"alliances","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":"Zenithcloud","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.571615","updated_at":"2026-08-13T18:23:16.571616"},{"task_id":"tsk_912705","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_025","thread_id":"th_eval_025","title":"Invoice overdue","description":"Finance/invoice item detected","assignee_id":"u_divya","target_role":"FINANCE_TEAM","category":"finance","priority":"high","due_date":null,"deal_value_inr":null,"company_name":"Vantagecloud","confidence":0.75,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.570501","updated_at":"2026-08-13T18:23:16.570502"},{"task_id":"tsk_36e0f5","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_024","thread_id":"th_eval_024","title":"Sponsorship","description":"Marketing/event item detected","assignee_id":"u_meera","target_role":"SALES_TEAM","category":"marketing","priority":"high","due_date":"2026-08-05","deal_value_inr":400000,"company_name":"Saassummit","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.569520","updated_at":"2026-08-13T18:23:16.569521"},{"task_id":"tsk_bc6220","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_023","thread_id":"th_eval_023","title":"PSU tender","description":"RFP/Tender detected via keyword matching","assignee_id":"u_aarti","target_role":"FOUNDER_OPS","category":"enterprise_rfp","priority":"urgent","due_date":"2026-08-03","deal_value_inr":650000,"company_name":"Bhel","confidence":0.75,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.568318","updated_at":"2026-08-13T18:23:16.568319"},{"task_id":"tsk_e15506","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_022","thread_id":"th_eval_022","title":"Demo request","description":"SMB enquiry detected","assignee_id":"u_rohit","target_role":"SALES_TEAM","category":"smb_enquiry","priority":"low","due_date":null,"deal_value_inr":null,"company_name":"Railyardlogistics","confidence":0.65,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.567331","updated_at":"2026-08-13T18:23:16.567332"},{"task_id":"tsk_8b1c1f","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_021","thread_id":"th_eval_021","title":"RFP - Enterprise DMS","description":"Enterprise RFP detected","assignee_id":"u_aarti","target_role":"FOUNDER_OPS","category":"enterprise_rfp","priority":"medium","due_date":null,"deal_value_inr":2500000,"company_name":"Meridiansteel","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.566382","updated_at":"2026-08-13T18:23:16.566383"},{"task_id":"tsk_5eecf6","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_020","thread_id":"th_eval_020","title":"Two asks","description":"Multi-intent or ambiguous email requiring human review","assignee_id":"u_triage","target_role":"SUPPORT_TEAM","category":"triage","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":"Halcyonretail","confidence":0.3,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.565372","updated_at":"2026-08-13T18:23:16.565373"},{"task_id":"tsk_8be08f","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_016","thread_id":"th_eval_016","title":"Reseller partnership","description":"Alliance/partnership item detected","assignee_id":"u_karan","target_role":"SALES_TEAM","category":"alliances","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":"Zenithcloud","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.561469","updated_at":"2026-08-13T18:23:16.561471"},{"task_id":"tsk_ca7e7a","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_015","thread_id":"th_eval_015","title":"Invoice overdue","description":"Finance/invoice item detected","assignee_id":"u_divya","target_role":"FINANCE_TEAM","category":"finance","priority":"high","due_date":null,"deal_value_inr":null,"company_name":"Vantagecloud","confidence":0.75,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.560272","updated_at":"2026-08-13T18:23:16.560273"},{"task_id":"tsk_27f83f","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_014","thread_id":"th_eval_014","title":"Sponsorship","description":"Marketing/event item detected","assignee_id":"u_meera","target_role":"SALES_TEAM","category":"marketing","priority":"high","due_date":"2026-08-05","deal_value_inr":400000,"company_name":"Saassummit","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.559273","updated_at":"2026-08-13T18:23:16.559274"},{"task_id":"tsk_fa0b34","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_013","thread_id":"th_eval_013","title":"PSU tender","description":"RFP/Tender detected via keyword matching","assignee_id":"u_aarti","target_role":"FOUNDER_OPS","category":"enterprise_rfp","priority":"urgent","due_date":"2026-08-03","deal_value_inr":650000,"company_name":"Bhel","confidence":0.75,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.558080","updated_at":"2026-08-13T18:23:16.558081"},{"task_id":"tsk_ffee01","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_012","thread_id":"th_eval_012","title":"Demo request","description":"SMB enquiry detected","assignee_id":"u_rohit","target_role":"SALES_TEAM","category":"smb_enquiry","priority":"low","due_date":null,"deal_value_inr":null,"company_name":"Railyardlogistics","confidence":0.65,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.557092","updated_at":"2026-08-13T18:23:16.557093"},{"task_id":"tsk_abebd9","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_011","thread_id":"th_eval_011","title":"RFP - Enterprise DMS","description":"Enterprise RFP detected","assignee_id":"u_aarti","target_role":"FOUNDER_OPS","category":"enterprise_rfp","priority":"medium","due_date":null,"deal_value_inr":2500000,"company_name":"Meridiansteel","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.556167","updated_at":"2026-08-13T18:23:16.556167"},{"task_id":"tsk_10f671","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_010","thread_id":"th_eval_010","title":"Two asks","description":"Multi-intent or ambiguous email requiring human review","assignee_id":"u_triage","target_role":"SUPPORT_TEAM","category":"triage","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":"Halcyonretail","confidence":0.3,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.555154","updated_at":"2026-08-13T18:23:16.555155"},{"task_id":"tsk_f6ef8d","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_006","thread_id":"th_eval_006","title":"Reseller partnership","description":"Alliance/partnership item detected","assignee_id":"u_karan","target_role":"SALES_TEAM","category":"alliances","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":"Zenithcloud","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.551748","updated_at":"2026-08-13T18:23:16.551748"},{"task_id":"tsk_351d78","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_005","thread_id":"th_eval_005","title":"Invoice overdue","description":"Finance/invoice item detected","assignee_id":"u_divya","target_role":"FINANCE_TEAM","category":"finance","priority":"high","due_date":null,"deal_value_inr":null,"company_name":"Vantagecloud","confidence":0.75,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.550812","updated_at":"2026-08-13T18:23:16.550813"},{"task_id":"tsk_2c8d82","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_004","thread_id":"th_eval_004","title":"Sponsorship","description":"Marketing/event item detected","assignee_id":"u_meera","target_role":"SALES_TEAM","category":"marketing","priority":"high","due_date":"2026-08-05","deal_value_inr":400000,"company_name":"Saassummit","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.549658","updated_at":"2026-08-13T18:23:16.549660"},{"task_id":"tsk_17465c","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_003","thread_id":"th_eval_003","title":"PSU tender","description":"RFP/Tender detected via keyword matching","assignee_id":"u_aarti","target_role":"FOUNDER_OPS","category":"enterprise_rfp","priority":"urgent","due_date":"2026-08-03","deal_value_inr":650000,"company_name":"Bhel","confidence":0.75,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.548349","updated_at":"2026-08-13T18:23:16.548349"},{"task_id":"tsk_3a13b4","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_002","thread_id":"th_eval_002","title":"Demo request","description":"SMB enquiry detected","assignee_id":"u_rohit","target_role":"SALES_TEAM","category":"smb_enquiry","priority":"low","due_date":null,"deal_value_inr":null,"company_name":"Railyardlogistics","confidence":0.65,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.546098","updated_at":"2026-08-13T18:23:16.546101"},{"task_id":"tsk_3adbe9","candidate_id":"demo@dispatchdesk.ai","source_email_id":"em_eval_001","thread_id":"th_eval_001","title":"RFP - Enterprise DMS","description":"Enterprise RFP detected","assignee_id":"u_aarti","target_role":"FOUNDER_OPS","category":"enterprise_rfp","priority":"medium","due_date":null,"deal_value_inr":2500000,"company_name":"Meridiansteel","confidence":0.7,"update_count":0,"batch_id":"accd685b","created_at":"2026-08-13T18:23:16.543639","updated_at":"2026-08-13T18:23:16.543642"}],"skipped":[{"email_id":"em_eval_049","thread_id":"th_eval_049","subject":"Newsletter","from_name":"Newsletter","from_email":"news@example.com","received_at":"2026-08-04T10:00:00+05:30","decision":"skipped","category":"skip_newsletter","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.85,"skip_reason":"newsletter","reasoning":"Newsletter detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.594849","body_preview":"The B2B Growth Weekly Issue #212. In this edition: pricing experiments. Unsubscribe."},{"email_id":"em_eval_048","thread_id":"th_eval_048","subject":"SEO audit","from_name":"Growth Agency","from_email":"hello@growthagency.example","received_at":"2026-08-03T10:00:00+05:30","decision":"skipped","category":"skip_vendor_spam","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.8,"skip_reason":"vendor_spam","reasoning":"Unsolicited vendor spam detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.593962","body_preview":"We noticed your website is not ranking. We do content marketing, PR outreach, webinar promotion. Interested in a quick call?"},{"email_id":"em_eval_047","thread_id":"th_eval_047","subject":"Out of Office","from_name":"Auto Reply","from_email":"auto@example.com","received_at":"2026-08-02T10:00:00+05:30","decision":"skipped","category":"skip_auto_reply","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.9,"skip_reason":"auto_reply","reasoning":"Auto-reply / out-of-office detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.593022","body_preview":"I am out of office until 14th August with limited access to email."},{"email_id":"em_eval_039","thread_id":"th_eval_039","subject":"Newsletter","from_name":"Newsletter","from_email":"news@example.com","received_at":"2026-08-04T10:00:00+05:30","decision":"skipped","category":"skip_newsletter","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.85,"skip_reason":"newsletter","reasoning":"Newsletter detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.584369","body_preview":"The B2B Growth Weekly Issue #212. In this edition: pricing experiments. Unsubscribe."},{"email_id":"em_eval_038","thread_id":"th_eval_038","subject":"SEO audit","from_name":"Growth Agency","from_email":"hello@growthagency.example","received_at":"2026-08-03T10:00:00+05:30","decision":"skipped","category":"skip_vendor_spam","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.8,"skip_reason":"vendor_spam","reasoning":"Unsolicited vendor spam detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.583565","body_preview":"We noticed your website is not ranking. We do content marketing, PR outreach, webinar promotion. Interested in a quick call?"},{"email_id":"em_eval_037","thread_id":"th_eval_037","subject":"Out of Office","from_name":"Auto Reply","from_email":"auto@example.com","received_at":"2026-08-02T10:00:00+05:30","decision":"skipped","category":"skip_auto_reply","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.9,"skip_reason":"auto_reply","reasoning":"Auto-reply / out-of-office detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.582699","body_preview":"I am out of office until 14th August with limited access to email."},{"email_id":"em_eval_029","thread_id":"th_eval_029","subject":"Newsletter","from_name":"Newsletter","from_email":"news@example.com","received_at":"2026-08-04T10:00:00+05:30","decision":"skipped","category":"skip_newsletter","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.85,"skip_reason":"newsletter","reasoning":"Newsletter detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.574128","body_preview":"The B2B Growth Weekly Issue #212. In this edition: pricing experiments. Unsubscribe."},{"email_id":"em_eval_028","thread_id":"th_eval_028","subject":"SEO audit","from_name":"Growth Agency","from_email":"hello@growthagency.example","received_at":"2026-08-03T10:00:00+05:30","decision":"skipped","category":"skip_vendor_spam","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.8,"skip_reason":"vendor_spam","reasoning":"Unsolicited vendor spam detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.573298","body_preview":"We noticed your website is not ranking. We do content marketing, PR outreach, webinar promotion. Interested in a quick call?"},{"email_id":"em_eval_027","thread_id":"th_eval_027","subject":"Out of Office","from_name":"Auto Reply","from_email":"auto@example.com","received_at":"2026-08-02T10:00:00+05:30","decision":"skipped","category":"skip_auto_reply","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.9,"skip_reason":"auto_reply","reasoning":"Auto-reply / out-of-office detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.572470","body_preview":"I am out of office until 14th August with limited access to email."},{"email_id":"em_eval_019","thread_id":"th_eval_019","subject":"Newsletter","from_name":"Newsletter","from_email":"news@example.com","received_at":"2026-08-04T10:00:00+05:30","decision":"skipped","category":"skip_newsletter","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.85,"skip_reason":"newsletter","reasoning":"Newsletter detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.564359","body_preview":"The B2B Growth Weekly Issue #212. In this edition: pricing experiments. Unsubscribe."},{"email_id":"em_eval_018","thread_id":"th_eval_018","subject":"SEO audit","from_name":"Growth Agency","from_email":"hello@growthagency.example","received_at":"2026-08-03T10:00:00+05:30","decision":"skipped","category":"skip_vendor_spam","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.8,"skip_reason":"vendor_spam","reasoning":"Unsolicited vendor spam detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.563409","body_preview":"We noticed your website is not ranking. We do content marketing, PR outreach, webinar promotion. Interested in a quick call?"},{"email_id":"em_eval_017","thread_id":"th_eval_017","subject":"Out of Office","from_name":"Auto Reply","from_email":"auto@example.com","received_at":"2026-08-02T10:00:00+05:30","decision":"skipped","category":"skip_auto_reply","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.9,"skip_reason":"auto_reply","reasoning":"Auto-reply / out-of-office detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.562261","body_preview":"I am out of office until 14th August with limited access to email."},{"email_id":"em_eval_009","thread_id":"th_eval_009","subject":"Newsletter","from_name":"Newsletter","from_email":"news@example.com","received_at":"2026-08-04T10:00:00+05:30","decision":"skipped","category":"skip_newsletter","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.85,"skip_reason":"newsletter","reasoning":"Newsletter detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.554239","body_preview":"The B2B Growth Weekly Issue #212. In this edition: pricing experiments. Unsubscribe."},{"email_id":"em_eval_008","thread_id":"th_eval_008","subject":"SEO audit","from_name":"Growth Agency","from_email":"hello@growthagency.example","received_at":"2026-08-03T10:00:00+05:30","decision":"skipped","category":"skip_vendor_spam","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.8,"skip_reason":"vendor_spam","reasoning":"Unsolicited vendor spam detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.553433","body_preview":"We noticed your website is not ranking. We do content marketing, PR outreach, webinar promotion. Interested in a quick call?"},{"email_id":"em_eval_007","thread_id":"th_eval_007","subject":"Out of Office","from_name":"Auto Reply","from_email":"auto@example.com","received_at":"2026-08-02T10:00:00+05:30","decision":"skipped","category":"skip_auto_reply","assignee_id":null,"target_role":"NONE","priority":"medium","due_date":null,"deal_value_inr":null,"company_name":null,"confidence":0.9,"skip_reason":"auto_reply","reasoning":"Auto-reply / out-of-office detected","task_id":null,"is_update":false,"created_at":"2026-08-13T18:23:16.552529","body_preview":"I am out of office until 14th August with limited access to email."}]};
 
 /* Candidate is a tenant/workspace identifier, never hardcoded to a person.
    Priority: ?candidate= URL param → saved value → generic default. */
@@ -1011,22 +1034,56 @@ function toast(message, kind = "info", duration = 3200) {
 function setConn(state) {
   const dot = document.getElementById("connDot");
   const text = document.getElementById("connText");
-  if (state === "ok") { dot.className = "dot"; text.textContent = "online"; }
-  else if (state === "err") { dot.className = "dot error"; text.textContent = "offline"; }
-  else { dot.className = "dot error"; text.textContent = "connecting"; }
+  const note = document.getElementById("heroNote");
+  const banner = document.getElementById("demoBanner");
+  if (state === "ok") {
+    dot.className = "dot"; text.textContent = "online";
+    if (note) note.textContent = "/api/stats · live";
+    if (banner) banner.style.display = "none";
+  } else if (state === "demo") {
+    dot.className = "dot warn"; text.textContent = "demo data";
+    if (note) note.textContent = "seeded demo inbox";
+    if (banner) {
+      banner.style.display = "flex";
+      const c = document.getElementById("demoCount");
+      if (c) c.textContent = demoDataAvailable() ? DEMO_DATA.stats.processed : "–";
+    }
+  } else if (state === "err") {
+    dot.className = "dot error"; text.textContent = "offline";
+    if (note) note.textContent = "/api/stats · offline";
+    if (banner) banner.style.display = "none";
+  } else {
+    dot.className = "dot error"; text.textContent = "connecting";
+  }
+}
+
+function demoDataAvailable() {
+  return typeof DEMO_DATA !== "undefined" && DEMO_DATA && Array.isArray(DEMO_DATA.tasks);
 }
 
 /* ── API ─────────────────────────────────────────────────── */
+function isStaticHost() {
+  const o = window.location.origin || "";
+  return /\.github\.io$/.test(o) || o.startsWith("file:") || o === "null";
+}
+
 function defaultApiBase() {
   const saved = localStorage.getItem("apiBase");
   if (saved) return saved;
+  if (isStaticHost()) return ""; // no backend on a static Pages host — demo mode
   if (window.location.origin && window.location.origin.startsWith("http")) return window.location.origin;
   return "http://localhost:8000";
 }
 
 function saveApiBase() {
   let value = document.getElementById("apiBase").value.trim().replace(/\/+$/, "");
-  if (!value) value = window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://localhost:8000";
+  if (!value) {
+    localStorage.removeItem("apiBase");
+    document.getElementById("apiBase").value = defaultApiBase();
+    toast("API base cleared — using default", "ok");
+    loadAll();
+    return;
+  }
   localStorage.setItem("apiBase", value);
   document.getElementById("apiBase").value = value;
   toast("API base saved: " + value, "ok");
@@ -1149,6 +1206,7 @@ function generateSamples(count = 250) {
 }
 
 async function runIngest() {
+  if (DATA_MODE === "demo") { toast("Static demo — ingest needs a live backend. Set the API base in the footer.", "err"); return; }
   if (!previewEmails.length) parseInput();
   if (!previewEmails.length) return;
   const btn = document.getElementById("ingestBtn");
@@ -1240,50 +1298,65 @@ async function loadStats() {
     renderStatCards(stats);
     renderCategoryBars(stats);
     document.getElementById("stats").textContent = JSON.stringify(stats, null, 2);
-    return true;
+    return "live";
   } catch (err) {
+    if (demoDataAvailable()) {
+      renderStatCards(DEMO_DATA.stats);
+      renderCategoryBars(DEMO_DATA.stats);
+      document.getElementById("stats").textContent = JSON.stringify(DEMO_DATA.stats, null, 2);
+      return "demo";
+    }
     document.getElementById("stats").textContent = String(err.message || err);
-    return false;
+    return "offline";
   }
+}
+
+function renderTaskData(tasks, skipped) {
+  const taskColumns = [
+    { key: "title", label: "Subject", title: true },
+    { key: "assignee_id", label: "Assigned to", render: v => assigneeChip(v) },
+    { key: "target_role", label: "Role", mono: true },
+    { key: "category", label: "Category", render: v => catStamp(v) },
+    { key: "priority", label: "Priority", render: v => priStamp(v) },
+    { key: "deal_value_inr", label: "Deal value", render: v => fmtINR(v) },
+    { key: "due_date", label: "Due", mono: true },
+    { key: "confidence", label: "Confidence", render: v => fmtPct(v) },
+    { key: "update_count", label: "Upd", num: true }
+  ];
+  document.getElementById("tasksTable").innerHTML = makeTable(tasks || [], taskColumns);
+  renderRack(tasks || []);
+
+  const skippedColumns = [
+    { key: "email_id", label: "Email", mono: true },
+    { key: "subject", label: "Subject", title: true },
+    { key: "category", label: "Category", render: v => catStamp(v) },
+    { key: "skip_reason", label: "Reason", mono: true },
+    { key: "confidence", label: "Confidence", render: v => fmtPct(v) }
+  ];
+  document.getElementById("skippedTable").innerHTML = makeTable(skipped || [], skippedColumns);
 }
 
 async function loadTasks() {
   try {
     const data = await api("/api/tasks?candidate_id=" + CANDIDATE_ID);
-    const taskColumns = [
-      { key: "title", label: "Subject", title: true },
-      { key: "assignee_id", label: "Assigned to", render: v => assigneeChip(v) },
-      { key: "target_role", label: "Role", mono: true },
-      { key: "category", label: "Category", render: v => catStamp(v) },
-      { key: "priority", label: "Priority", render: v => priStamp(v) },
-      { key: "deal_value_inr", label: "Deal value", render: v => fmtINR(v) },
-      { key: "due_date", label: "Due", mono: true },
-      { key: "confidence", label: "Confidence", render: v => fmtPct(v) },
-      { key: "update_count", label: "Upd", num: true }
-    ];
-    document.getElementById("tasksTable").innerHTML = makeTable(data.tasks || [], taskColumns);
-    renderRack(data.tasks || []);
-
-    const skippedColumns = [
-      { key: "email_id", label: "Email", mono: true },
-      { key: "subject", label: "Subject", title: true },
-      { key: "category", label: "Category", render: v => catStamp(v) },
-      { key: "skip_reason", label: "Reason", mono: true },
-      { key: "confidence", label: "Confidence", render: v => fmtPct(v) }
-    ];
-    document.getElementById("skippedTable").innerHTML = makeTable(data.skipped || [], skippedColumns);
-    return true;
+    renderTaskData(data.tasks, data.skipped);
+    return "live";
   } catch (err) {
+    if (demoDataAvailable()) {
+      renderTaskData(DEMO_DATA.tasks, DEMO_DATA.skipped);
+      return "demo";
+    }
     document.getElementById("tasksTable").innerHTML = `<div class="empty">${escapeText(err.message || err)}</div>`;
     document.getElementById("skippedTable").innerHTML = `<div class="empty">${escapeText(err.message || err)}</div>`;
-    return false;
+    return "offline";
   }
 }
 
 async function loadAll() {
   const [s, t] = await Promise.all([loadStats(), loadTasks()]);
-  setConn(s && t ? "ok" : "err");
-  return s && t;
+  DATA_MODE = (s === "live" && t === "live") ? "live" : ((s === "demo" || t === "demo") ? "demo" : "offline");
+  setConn(DATA_MODE === "live" ? "ok" : DATA_MODE === "demo" ? "demo" : "err");
+  return DATA_MODE !== "offline";
 }
 
 /* ── Chat ────────────────────────────────────────────────── */
@@ -1325,9 +1398,115 @@ async function sendChat() {
     });
     addChat("bot", resp.answer, resp.supporting_data);
   } catch (err) {
-    addChat("bot", "Error: " + String(err.message || err));
-    toast("Chat request failed", "err");
+    if (demoDataAvailable()) {
+      const ans = demoChat(query, DEMO_DATA);
+      addChat("bot", ans.answer, ans.supporting_data);
+    } else {
+      addChat("bot", "Error: " + String(err.message || err));
+      toast("Chat request failed", "err");
+    }
   }
+}
+
+/* Grounded chat for static demo mode — mirrors backend/chat_rag.py:
+   answers are computed from the embedded DEMO_DATA, never guessed. */
+const DEMO_SKIP_CATEGORIES = ["skip_auto_reply", "skip_newsletter", "skip_vendor_spam"];
+
+function demoChat(query, data) {
+  const q = String(query || "").toLowerCase();
+  const tasks = data.tasks || [];
+  const skipped = data.skipped || [];
+  const stats = data.stats || {};
+
+  const countCat = c => tasks.filter(t => t.category === c).length;
+
+  if (q.includes("send ") && q.includes("email")) {
+    return { answer: "I can't do that. I can only answer questions about processed email routing data.", supporting_data: { out_of_scope: true } };
+  }
+  if (["delete", "remove", "forward", "reply", "draft"].some(w => q.includes(w))) {
+    return { answer: "I can't do that. I can only answer questions about processed email routing data.", supporting_data: { out_of_scope: true } };
+  }
+
+  if (q.includes("spurious")) {
+    const processed = stats.processed || (tasks.length + skipped.length);
+    const spurious = (stats.spurious_flagged != null ? stats.spurious_flagged : tasks.filter(t => DEMO_SKIP_CATEGORIES.includes(t.category)).length);
+    const rate = processed > 0 ? spurious / processed : 0;
+    return {
+      answer: `Out of ${processed} processed emails, ${spurious} were spurious tasks. The spurious rate is ${(rate * 100).toFixed(1)}%.`,
+      supporting_data: { processed, spurious_count: spurious, spurious_rate: Math.round(rate * 1000) / 1000 }
+    };
+  }
+
+  if (q.includes("gst refund")) {
+    return { answer: "0 emails were routed for GST refunds.", supporting_data: { gst_refund_count: 0 } };
+  }
+
+  if (q.includes("marketing vs rfp") || q.includes("proposal or rfp") || q.includes("marketing versus") ||
+      (q.includes("marketing") && q.includes("spam")) || (q.includes("rfp") && q.includes("how many")) ||
+      (q.includes("proposal") && q.includes("how many")) || q.includes("rfp related")) {
+    const rfp = countCat("enterprise_rfp");
+    const marketing = countCat("marketing");
+    const spam = skipped.filter(s => s.skip_reason === "vendor_spam").length;
+    return {
+      answer: `There are ${rfp} enterprise_rfp tasks, ${marketing} marketing tasks, and ${spam} skipped vendor_spam emails.`,
+      supporting_data: { enterprise_rfp: rfp, marketing, skipped_marketing_lookalike_spam: spam }
+    };
+  }
+
+  if (q.includes("triage")) {
+    const t = tasks.filter(x => x.category === "triage");
+    return {
+      answer: `There are ${t.length} emails in triage.`,
+      supporting_data: {
+        triage_count: t.length,
+        triage_task_ids: t.map(x => x.task_id),
+        tasks: t.map(x => ({ task_id: x.task_id, reasoning: x.description }))
+      }
+    };
+  }
+
+  if (q.includes("high priority") && q.includes("low confidence")) {
+    const m = tasks.filter(x => x.priority === "high" && Number(x.confidence) < 0.5);
+    return {
+      answer: `There are ${m.length} high priority tasks with low confidence.`,
+      supporting_data: { matches: m.map(x => ({ task_id: x.task_id, confidence: x.confidence })) }
+    };
+  }
+
+  if (q.includes("deal value") && q.includes("rfp")) {
+    const rfps = tasks.filter(x => x.category === "enterprise_rfp");
+    const total = rfps.reduce((a, x) => a + Number(x.deal_value_inr || 0), 0);
+    const noVal = rfps.filter(x => !x.deal_value_inr).length;
+    return {
+      answer: `The total deal value for open RFPs is ${total}. ${noVal} RFPs had no stated value.`,
+      supporting_data: { total_deal_value_inr: total, rfps_with_no_stated_value: noVal }
+    };
+  }
+
+  if (q.includes("alliances") && q.includes("reseller")) {
+    const a = countCat("alliances");
+    return {
+      answer: `I don't have that breakdown. I only track overall alliances tasks, of which there are ${a}.`,
+      supporting_data: { alliances: a }
+    };
+  }
+
+  if (q.includes("thread") && q.includes("updated more than once")) {
+    const u = tasks.filter(x => Number(x.update_count || 0) > 1);
+    return {
+      answer: `There are ${u.length} threads updated more than once.`,
+      supporting_data: { threads_updated_multiple_times: u.map(x => x.thread_id) }
+    };
+  }
+
+  const category_counts = {};
+  tasks.forEach(x => { category_counts[x.category] = (category_counts[x.category] || 0) + 1; });
+  const skipped_counts = {};
+  skipped.forEach(x => { skipped_counts[x.skip_reason] = (skipped_counts[x.skip_reason] || 0) + 1; });
+  return {
+    answer: `Current task counts: ${JSON.stringify(category_counts)}. Skipped counts: ${JSON.stringify(skipped_counts)}.`,
+    supporting_data: { category_counts, skipped_counts }
+  };
 }
 
 /* ── Init ────────────────────────────────────────────────── */
