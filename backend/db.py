@@ -80,7 +80,18 @@ class EmailLog(Base):
     __table_args__ = (UniqueConstraint("candidate_id", "email_id", name="uq_candidate_email"),)
 
 
-Base.metadata.create_all(bind=engine)
+DB_ERROR = None
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as exc:  # pragma: no cover - env-specific (e.g. read-only FS on serverless)
+    # Keep the app importable so the UI and /health keep working. Endpoints
+    # that touch the DB will fail with a clear message until DATABASE_URL is
+    # configured (e.g. Vercel Postgres).
+    DB_ERROR = f"Database unavailable: {exc}. Set DATABASE_URL to a reachable Postgres."
+    engine = None
+
+    def SessionLocal():  # type: ignore[no-redef]
+        raise RuntimeError(DB_ERROR)
 
 
 def new_task_id() -> str:

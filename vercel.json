@@ -1,5 +1,8 @@
 {
-  "buildCommand": "echo 'static site — no build required'",
-  "outputDirectory": "frontend",
-  "cleanUrls": true
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "backend/app.py": {
+      "maxDuration": 60
+    }
+  }
 }
