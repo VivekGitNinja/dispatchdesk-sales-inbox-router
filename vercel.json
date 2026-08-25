@@ -1,5 +1,16 @@
 {
-  "buildCommand": "echo 'static site — no build required'",
-  "outputDirectory": "frontend",
-  "cleanUrls": true
+  "outputDirectory": "public",
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    { "src": "/health", "dest": "api/index.py" },
+    { "src": "/users", "dest": "api/index.py" },
+    { "src": "/api/(.*)", "dest": "api/index.py" },
+    { "src": "/ingest", "dest": "api/index.py" },
+    { "src": "/tasks/(.*)", "dest": "api/index.py" }
+  ]
 }
