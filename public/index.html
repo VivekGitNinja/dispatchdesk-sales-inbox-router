@@ -1300,12 +1300,16 @@ function renderRack(tasks) {
 /* ── Load data ───────────────────────────────────────────── */
 async function loadStats() {
   try {
+    const url = apiBase() + "/api/stats?candidate_id=" + CANDIDATE_ID;
+    console.log("[DispatchDesk] fetch stats from:", url);
     const stats = await api("/api/stats?candidate_id=" + CANDIDATE_ID);
+    console.log("[DispatchDesk] stats OK:", stats);
     renderStatCards(stats);
     renderCategoryBars(stats);
     document.getElementById("stats").textContent = JSON.stringify(stats, null, 2);
     return "live";
   } catch (err) {
+    console.error("[DispatchDesk] stats FAILED:", err);
     document.getElementById("stats").textContent = String(err.message || err);
     if (demoDataAvailable()) {
       renderStatCards(DEMO_DATA.stats);
@@ -1343,10 +1347,14 @@ function renderTaskData(tasks, skipped) {
 
 async function loadTasks() {
   try {
+    const url = apiBase() + "/api/tasks?candidate_id=" + CANDIDATE_ID;
+    console.log("[DispatchDesk] fetch tasks from:", url);
     const data = await api("/api/tasks?candidate_id=" + CANDIDATE_ID);
+    console.log("[DispatchDesk] tasks OK:", data);
     renderTaskData(data.tasks, data.skipped);
     return "live";
   } catch (err) {
+    console.error("[DispatchDesk] tasks FAILED:", err);
     if (demoDataAvailable()) {
       renderTaskData(DEMO_DATA.tasks, DEMO_DATA.skipped);
       return "demo";
