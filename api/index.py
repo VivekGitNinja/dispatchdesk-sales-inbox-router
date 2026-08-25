@@ -46,7 +46,8 @@ class ChatRequest(BaseModel):
 logging.basicConfig(level=logging.INFO)
 logger=logging.getLogger(__name__)
 BASE_DIR=os.path.dirname(os.path.abspath(__file__))
-_default_db="sqlite:///"+os.path.join(BASE_DIR,"inbox_router.db")
+_tmp="/tmp" if os.path.isdir("/tmp") else BASE_DIR
+_default_db="sqlite:///"+os.path.join(_tmp,"inbox_router.db")
 DATABASE_URL=os.getenv("DATABASE_URL") or _default_db
 CANDIDATE_ID_DEFAULT=os.getenv("CANDIDATE_ID","demo@dispatchdesk.ai").strip().lower()
 connect_args={}
