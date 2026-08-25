@@ -1116,9 +1116,12 @@ function apiBase() {
 async function api(path, options = {}) {
   const url = apiBase() + path;
   const token = localStorage.getItem("apiToken") || "";
-  const headers = { "Content-Type": "application/json" };
+  const method = (options && options.method) || "GET";
+  const headers = {};
+  if (method !== "GET" && method !== "HEAD") headers["Content-Type"] = "application/json";
   if (token) headers["Authorization"] = "Bearer " + token;
   const resp = await fetch(url, {
+    method,
     headers,
     ...options
   });
@@ -1303,14 +1306,13 @@ async function loadStats() {
     document.getElementById("stats").textContent = JSON.stringify(stats, null, 2);
     return "live";
   } catch (err) {
+    document.getElementById("stats").textContent = String(err.message || err);
     if (demoDataAvailable()) {
       renderStatCards(DEMO_DATA.stats);
       renderCategoryBars(DEMO_DATA.stats);
       document.getElementById("stats").textContent = JSON.stringify(DEMO_DATA.stats, null, 2);
-      return "demo";
     }
-    document.getElementById("stats").textContent = String(err.message || err);
-    return "offline";
+    return demoDataAvailable() ? "demo" : "offline";
   }
 }
 
